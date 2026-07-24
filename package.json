@@ -1,0 +1,17 @@
+{
+  "name": "glideframe-platform",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "build": "npm run build -w @glideframe/contracts && npm run build -w @glideframe/api && npm run build -w @glideframe/web",
+    "dev:api": "npm run dev -w @glideframe/api",
+    "dev:web": "npm run dev -w @glideframe/web",
+    "test": "npm run test -w @glideframe/api",
+    "typecheck": "npm run typecheck -w @glideframe/contracts && npm run typecheck -w @glideframe/api && npm run typecheck -w @glideframe/web"
+  },
+  "overrides": {
+    "postcss": "8.5.22"
+  },
+  "engines": { "node": ">=22" }
+}

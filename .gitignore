@@ -1,0 +1,12 @@
+.DS_Store
+.build/
+.swiftpm/
+DerivedData/
+node_modules/
+dist/
+.next/
+coverage/
+.env
+.data/
+*.xcuserstate
+*.tsbuildinfo

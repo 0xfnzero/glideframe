@@ -1,0 +1,43 @@
+name: GlideFrame
+options:
+  bundleIdPrefix: app.glideframe
+  deploymentTarget:
+    macOS: "14.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ARCHS: arm64
+targets:
+  GlideFrameKit:
+    type: framework
+    platform: macOS
+    sources:
+      - Sources/GlideFrameKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.glideframe.kit
+        DEFINES_MODULE: YES
+  GlideFrame:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/GlideFrameApp
+    dependencies:
+      - target: GlideFrameKit
+    info:
+      path: macos/Info.plist
+    entitlements:
+      path: macos/GlideFrame.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.glideframe.studio
+        PRODUCT_NAME: GlideFrame
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_STYLE: Automatic
+  GlideFrameKitTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - Tests/GlideFrameKitTests
+    dependencies:
+      - target: GlideFrameKit

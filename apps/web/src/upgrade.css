@@ -1,0 +1,19 @@
+.plan-upgrade {
+  height: 30px;
+  margin-top: 8px;
+  border: 1px solid #5b5e65;
+  border-radius: 4px;
+  background: #2b2d32;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.plan-upgrade:hover {
+  border-color: #ff7770;
+}
+
+.plan-upgrade:disabled {
+  opacity: 0.55;
+}
