@@ -6,6 +6,8 @@ ScreenCaptureKit writes the screen and system audio into a fragmented movie whil
 
 Export builds an AVComposition from the edit graph, applies click-driven transforms through AVVideoComposition, mixes system and microphone audio, and uses hardware-backed H.264 or HEVC export. Cloud upload is always an explicit project action.
 
+Format conversion is a separate batch workflow backed by FFmpeg/ffprobe. `GlideFrameKit` owns the validated container/codec matrix, command construction, process lifecycle, progress parsing, and cancellation. The app owns file selection, queue state, output naming, and Finder integration. Development builds discover Homebrew; release builds should use a legally reviewed FFmpeg toolchain bundled under `Contents/Resources/Tools`.
+
 The API issues short-lived access tokens, evaluates entitlements server-side, presigns multipart object uploads, and stores only metadata in PostgreSQL. Public shares use high-entropy tokens plus optional scrypt passwords and expiry. AI work is queued in Redis; a provider receives a one-hour S3 URL rather than permanent object credentials.
 
 ## Cross-platform Direction

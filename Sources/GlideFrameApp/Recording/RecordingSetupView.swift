@@ -3,6 +3,8 @@ import SwiftUI
 struct RecordingSetupView: View {
     @EnvironmentObject private var model: AppModel
     @Environment(\.dismiss) private var dismiss
+    @State private var regionSelector: ScreenRegionSelector?
+    @State private var isSelectingRegion = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -19,11 +21,46 @@ struct RecordingSetupView: View {
             HStack(alignment: .top, spacing: 24) {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(tr("source")).font(.headline)
-                    ScrollView {
-                        LazyVStack(spacing: 4) {
-                            ForEach(model.recordingEngine.targets) { target in
-                                TargetRow(target: target, selected: target.id == model.recordingOptions.targetID) {
-                                    model.recordingOptions.targetID = target.id
+                    ZStack {
+                        ScrollView {
+                            LazyVStack(spacing: 4) {
+                                ForEach(model.recordingEngine.targets) { target in
+                                    TargetRow(target: target, selected: target.id == model.recordingOptions.targetID) {
+                                        if model.recordingOptions.targetID != target.id {
+                                            model.recordingOptions.region = nil
+                                        }
+                                        model.recordingOptions.targetID = target.id
+                                    }
+                                }
+                            }
+                        }
+
+                        if model.isLoadingCaptureTargets {
+                            ProgressView(tr("loading_sources"))
+                        } else if model.recordingEngine.targets.isEmpty {
+                            VStack(spacing: 8) {
+                                Image(systemName: "rectangle.on.rectangle.slash")
+                                    .font(.system(size: 28, weight: .light))
+                                    .foregroundStyle(.secondary)
+                                Text(tr("no_sources"))
+                                    .font(.subheadline.weight(.medium))
+                                if let captureTargetError = model.captureTargetError {
+                                    Text(captureTargetError)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .multilineTextAlignment(.center)
+                                        .frame(maxWidth: 250)
+                                }
+                                if model.screenCaptureAccessUnavailable {
+                                    HStack(spacing: 8) {
+                                        Button(tr("request_access")) {
+                                            Task { await model.requestScreenCaptureAccess() }
+                                        }
+                                        Button(tr("relaunch")) {
+                                            model.relaunch()
+                                        }
+                                    }
+                                    .controlSize(.small)
                                 }
                             }
                         }
@@ -33,10 +70,31 @@ struct RecordingSetupView: View {
                         Label(tr("refresh"), systemImage: "arrow.clockwise")
                     }
                     .buttonStyle(.borderless)
+                    .disabled(model.isLoadingCaptureTargets)
                 }
                 .frame(width: 340)
 
                 Form {
+                    if selectedTarget != nil {
+                        Picker(tr("capture_area"), selection: captureAreaMode) {
+                            Text(tr("full_source")).tag(CaptureAreaMode.fullScreen)
+                            Text(tr("selected_area")).tag(CaptureAreaMode.selectedArea)
+                        }
+                        .pickerStyle(.segmented)
+
+                        if let region = model.recordingOptions.region {
+                            LabeledContent(
+                                tr("area_size"),
+                                value: "\(Int(region.width)) x \(Int(region.height))"
+                            )
+                            Button {
+                                beginRegionSelection()
+                            } label: {
+                                Label(tr("reselect_area"), systemImage: "viewfinder")
+                            }
+                            .disabled(isSelectingRegion)
+                        }
+                    }
                     Picker(tr("frame_rate"), selection: $model.recordingOptions.frameRate) {
                         Text("30 fps").tag(30)
                         Text("60 fps").tag(60)
@@ -65,12 +123,65 @@ struct RecordingSetupView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
-                .disabled(model.recordingOptions.targetID == nil || model.recordingEngine.state.isActive)
+                .disabled(
+                    model.isLoadingCaptureTargets
+                        || model.recordingOptions.targetID == nil
+                        || model.recordingEngine.state.isActive
+                        || isSelectingRegion
+                )
             }
             .padding(16)
         }
         .frame(width: 700, height: 530)
+        .task { await model.reloadTargets() }
+        .onDisappear { regionSelector?.cancel() }
     }
+
+    private var selectedTarget: CaptureTargetDescriptor? {
+        model.recordingEngine.targets.first { $0.id == model.recordingOptions.targetID }
+    }
+
+    private var captureAreaMode: Binding<CaptureAreaMode> {
+        Binding(
+            get: { model.recordingOptions.region == nil ? .fullScreen : .selectedArea },
+            set: { mode in
+                switch mode {
+                case .fullScreen:
+                    model.recordingOptions.region = nil
+                case .selectedArea:
+                    beginRegionSelection()
+                }
+            }
+        )
+    }
+
+    private func beginRegionSelection() {
+        guard !isSelectingRegion,
+              let target = selectedTarget
+        else { return }
+
+        isSelectingRegion = true
+        let selector = ScreenRegionSelector()
+        regionSelector = selector
+        Task { @MainActor in
+            let region = await selector.selectRegion(
+                on: target.selectionDisplayID,
+                constrainedTo: target.selectionFrame
+            )
+            if let region, model.recordingOptions.targetID == target.id {
+                model.recordingOptions.region = region
+            }
+            if regionSelector === selector {
+                regionSelector = nil
+                isSelectingRegion = false
+            }
+        }
+    }
+}
+
+private enum CaptureAreaMode: Hashable {
+    case fullScreen
+    case selectedArea
 }
 
 private struct TargetRow: View {

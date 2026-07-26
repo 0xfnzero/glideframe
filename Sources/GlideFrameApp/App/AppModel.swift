@@ -10,11 +10,16 @@ final class AppModel: ObservableObject {
     @Published var selectedPackageURL: URL?
     @Published var recordingOptions = RecordingOptions()
     @Published var showsRecordingSetup = false
+    @Published var showsFormatConverter = false
     @Published var isExporting = false
+    @Published var isLoadingCaptureTargets = false
+    @Published var screenCaptureAccessUnavailable = false
+    @Published var captureTargetError: String?
     @Published var notice: AppNotice?
     @Published var recoveredProjectCount = 0
 
     let recordingEngine = RecordingEngine()
+    let formatConverter = FormatConverterModel()
     private let repository = ProjectRepository()
     private let exporter = ExportService()
     private var activeManifest: ProjectManifest?
@@ -25,21 +30,50 @@ final class AppModel: ObservableObject {
         do {
             recoveredProjectCount = try await repository.recoverInterruptedProjects().count
             try await reloadProjects()
-            try await recordingEngine.refreshTargets()
-            recordingOptions.targetID = recordingEngine.targets.first?.id
         } catch {
             notice = .error(error.localizedDescription)
         }
     }
 
     func reloadTargets() async {
+        guard !isLoadingCaptureTargets else { return }
+        isLoadingCaptureTargets = true
+        captureTargetError = nil
+        defer { isLoadingCaptureTargets = false }
+
         do {
             try await recordingEngine.refreshTargets()
+            screenCaptureAccessUnavailable = false
             if !recordingEngine.targets.contains(where: { $0.id == recordingOptions.targetID }) {
                 recordingOptions.targetID = recordingEngine.targets.first?.id
+                recordingOptions.region = nil
             }
         } catch {
-            notice = .error(error.localizedDescription)
+            recordingOptions.targetID = nil
+            recordingOptions.region = nil
+            screenCaptureAccessUnavailable = recordingEngine.isScreenCapturePermissionError(error)
+            captureTargetError = screenCaptureAccessUnavailable
+                ? tr("screen_access_unavailable")
+                : error.localizedDescription
+        }
+    }
+
+    func requestScreenCaptureAccess() async {
+        recordingEngine.requestScreenCaptureAccess()
+        await reloadTargets()
+    }
+
+    func relaunch() {
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.createsNewApplicationInstance = true
+        NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL, configuration: configuration) { _, error in
+            Task { @MainActor in
+                if let error {
+                    self.notice = .error(error.localizedDescription)
+                } else {
+                    NSApplication.shared.terminate(nil)
+                }
+            }
         }
     }
 
@@ -92,6 +126,10 @@ final class AppModel: ObservableObject {
             try await reloadProjects()
             selectedManifest = try await repository.load(at: packageURL)
             selectedPackageURL = packageURL
+            notice = .success(
+                String(format: tr("recording_saved"), packageURL.path),
+                revealURL: packageURL
+            )
         } catch {
             notice = .error(error.localizedDescription)
         }
@@ -136,6 +174,19 @@ final class AppModel: ObservableObject {
         NSWorkspace.shared.activateFileViewerSelecting([selectedPackageURL])
     }
 
+    func revealProjectsFolder() {
+        let url = (activePackageURL ?? selectedPackageURL)?.appending(
+            path: "Sources",
+            directoryHint: .isDirectory
+        ) ?? ProjectRepository.defaultRootURL()
+        do {
+            try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+            NSWorkspace.shared.open(url)
+        } catch {
+            notice = .error(error.localizedDescription)
+        }
+    }
+
     func sourceURL(kind: MediaSource.Kind = .screen) -> URL? {
         guard let packageURL = selectedPackageURL,
               let source = selectedManifest?.sources.first(where: { $0.kind == kind })
@@ -170,7 +221,13 @@ struct AppNotice: Identifiable, Equatable {
     let id = UUID()
     let kind: Kind
     let message: String
+    let revealURL: URL?
 
-    static func success(_ message: String) -> AppNotice { .init(kind: .success, message: message) }
-    static func error(_ message: String) -> AppNotice { .init(kind: .error, message: message) }
+    static func success(_ message: String, revealURL: URL? = nil) -> AppNotice {
+        .init(kind: .success, message: message, revealURL: revealURL)
+    }
+
+    static func error(_ message: String) -> AppNotice {
+        .init(kind: .error, message: message, revealURL: nil)
+    }
 }

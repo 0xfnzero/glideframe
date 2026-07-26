@@ -34,6 +34,7 @@ final class PointerTracker {
         if kind == .move, elapsed - lastMoveAt < 0.05 { return }
         if kind == .move { lastMoveAt = elapsed }
         let point = NSEvent.mouseLocation
+        guard bounds.contains(point) else { return }
         let normalizedX = (point.x - bounds.minX) / bounds.width
         let normalizedY = 1 - ((point.y - bounds.minY) / bounds.height)
         events.append(.init(time: elapsed, x: normalizedX, y: normalizedY, kind: kind))

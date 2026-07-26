@@ -56,16 +56,44 @@ private struct StudioPreview: View {
 
 private struct PlayerSurface: View {
     let url: URL
-    @State private var player: AVPlayer
-
-    init(url: URL) {
-        self.url = url
-        _player = State(initialValue: AVPlayer(url: url))
-    }
 
     var body: some View {
-        VideoPlayer(player: player)
-            .onChange(of: url) { _, newURL in player.replaceCurrentItem(with: AVPlayerItem(url: newURL)) }
+        AppKitPlayerSurface(url: url)
+    }
+}
+
+private struct AppKitPlayerSurface: NSViewRepresentable {
+    let url: URL
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(url: url)
+    }
+
+    func makeNSView(context: Context) -> AVPlayerView {
+        let view = AVPlayerView(frame: .zero)
+        view.controlsStyle = .inline
+        view.videoGravity = .resizeAspect
+        view.player = AVPlayer(url: url)
+        return view
+    }
+
+    func updateNSView(_ view: AVPlayerView, context: Context) {
+        guard context.coordinator.url != url else { return }
+        context.coordinator.url = url
+        view.player?.replaceCurrentItem(with: AVPlayerItem(url: url))
+    }
+
+    static func dismantleNSView(_ view: AVPlayerView, coordinator: Coordinator) {
+        view.player?.pause()
+        view.player = nil
+    }
+
+    final class Coordinator {
+        var url: URL
+
+        init(url: URL) {
+            self.url = url
+        }
     }
 }
 

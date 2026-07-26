@@ -1,5 +1,11 @@
 import Foundation
 
+#if SWIFT_PACKAGE
+private let localizationBundle = Bundle.module
+#else
+private let localizationBundle = Bundle.main
+#endif
+
 func tr(_ key: String) -> String {
-    Bundle.module.localizedString(forKey: key, value: key, table: nil)
+    localizationBundle.localizedString(forKey: key, value: key, table: nil)
 }

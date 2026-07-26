@@ -17,6 +17,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.glideframe.kit
         DEFINES_MODULE: YES
+        GENERATE_INFOPLIST_FILE: YES
   GlideFrame:
     type: application
     platform: macOS
@@ -26,8 +27,20 @@ targets:
       - target: GlideFrameKit
     info:
       path: macos/Info.plist
+      properties:
+        CFBundleDisplayName: GlideFrame
+        CFBundleShortVersionString: 0.1.0
+        LSApplicationCategoryType: public.app-category.video
+        NSHighResolutionCapable: true
+        NSCameraUsageDescription: GlideFrame records your camera as an optional, separate video track.
+        NSMicrophoneUsageDescription: GlideFrame records your microphone as an optional, separate audio track.
+        NSScreenCaptureUsageDescription: GlideFrame records the screen, window, or region you select.
     entitlements:
       path: macos/GlideFrame.entitlements
+      properties:
+        com.apple.security.device.audio-input: true
+        com.apple.security.device.camera: true
+        com.apple.security.network.client: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.glideframe.studio
@@ -41,3 +54,17 @@ targets:
       - Tests/GlideFrameKitTests
     dependencies:
       - target: GlideFrameKit
+schemes:
+  GlideFrame:
+    build:
+      targets:
+        GlideFrame: all
+        GlideFrameKitTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - GlideFrameKitTests
+    archive:
+      config: Release

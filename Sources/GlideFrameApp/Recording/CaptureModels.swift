@@ -12,6 +12,8 @@ struct CaptureTargetDescriptor: Identifiable, Hashable {
     let title: String
     let subtitle: String
     let nativeID: UInt32
+    let selectionDisplayID: UInt32
+    let selectionFrame: CGRect
 }
 
 struct RecordingOptions: Equatable {

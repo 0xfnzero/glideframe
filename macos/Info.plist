@@ -2,16 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleDisplayName</key><string>GlideFrame</string>
-    <key>CFBundleIdentifier</key><string>app.glideframe.studio</string>
-    <key>CFBundleName</key><string>GlideFrame</string>
-    <key>CFBundleShortVersionString</key><string>0.1.0</string>
-    <key>CFBundleVersion</key><string>1</string>
-    <key>LSMinimumSystemVersion</key><string>14.0</string>
-    <key>LSApplicationCategoryType</key><string>public.app-category.video</string>
-    <key>NSHighResolutionCapable</key><true/>
-    <key>NSCameraUsageDescription</key><string>GlideFrame records your camera as an optional, separate video track.</string>
-    <key>NSMicrophoneUsageDescription</key><string>GlideFrame records your microphone as an optional, separate audio track.</string>
-    <key>NSScreenCaptureUsageDescription</key><string>GlideFrame records the screen, window, or region you select.</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>GlideFrame</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.video</string>
+	<key>NSCameraUsageDescription</key>
+	<string>GlideFrame records your camera as an optional, separate video track.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>GlideFrame records your microphone as an optional, separate audio track.</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>GlideFrame records the screen, window, or region you select.</string>
 </dict>
 </plist>

@@ -2,6 +2,7 @@
 .build/
 .swiftpm/
 DerivedData/
+/GlideFrame.xcodeproj/
 node_modules/
 dist/
 .next/

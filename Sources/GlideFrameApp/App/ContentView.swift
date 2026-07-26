@@ -1,3 +1,4 @@
+import AppKit
 import GlideFrameKit
 import SwiftUI
 
@@ -10,7 +11,9 @@ struct ContentView: View {
                 .navigationSplitViewColumnWidth(min: 210, ideal: 240, max: 290)
         } detail: {
             Group {
-                if model.selectedManifest != nil {
+                if model.recordingEngine.state.isActive {
+                    RecordingLiveView(engine: model.recordingEngine)
+                } else if model.selectedManifest != nil {
                     StudioView()
                 } else {
                     EmptyStudioView()
@@ -19,12 +22,56 @@ struct ContentView: View {
             .safeAreaInset(edge: .top, spacing: 0) { StudioToolbar() }
         }
         .sheet(isPresented: $model.showsRecordingSetup) { RecordingSetupView() }
+        .sheet(isPresented: $model.showsFormatConverter) {
+            FormatConverterView(converter: model.formatConverter)
+        }
         .alert(item: $model.notice) { notice in
-            Alert(
+            if let revealURL = notice.revealURL {
+                return Alert(
+                    title: Text(tr(notice.kind == .success ? "done" : "error")),
+                    message: Text(notice.message),
+                    primaryButton: .default(Text(tr("reveal_project"))) {
+                        NSWorkspace.shared.activateFileViewerSelecting([revealURL])
+                    },
+                    secondaryButton: .cancel(Text(tr("ok")))
+                )
+            }
+            return Alert(
                 title: Text(tr(notice.kind == .success ? "done" : "error")),
                 message: Text(notice.message),
                 dismissButton: .default(Text(tr("ok")))
             )
+        }
+    }
+}
+
+private struct RecordingLiveView: View {
+    @ObservedObject var engine: RecordingEngine
+
+    var body: some View {
+        ZStack {
+            Color.black
+            if let previewImage = engine.previewImage {
+                Image(decorative: previewImage, scale: 1)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(.white)
+            }
+        }
+        .overlay(alignment: .topLeading) {
+            HStack(spacing: 8) {
+                Circle().fill(.red).frame(width: 8, height: 8)
+                Text(tr("live_preview"))
+                    .font(.subheadline.weight(.medium))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 12)
+            .frame(height: 32)
+            .background(.black.opacity(0.68), in: RoundedRectangle(cornerRadius: 6))
+            .padding(16)
         }
     }
 }
@@ -77,7 +124,7 @@ private struct ProjectRow: View {
             HStack(spacing: 6) {
                 Text(project.duration.durationLabel)
                 Text("·")
-                Text(project.updatedAt, style: .relative)
+                Text(project.updatedAt, format: .dateTime.month(.abbreviated).day().hour().minute())
             }
             .font(.caption)
             .foregroundStyle(.secondary)
@@ -97,6 +144,12 @@ private struct StudioToolbar: View {
             Spacer()
             RecordingControlBar(engine: model.recordingEngine)
             Spacer()
+            Button { model.revealProjectsFolder() } label: {
+                Image(systemName: "folder")
+            }
+            .buttonStyle(.bordered)
+            .help(tr("open_recordings_folder"))
+
             Button {
                 model.showsRecordingSetup = true
             } label: {
@@ -111,6 +164,11 @@ private struct StudioToolbar: View {
             }
             .buttonStyle(.bordered)
             .disabled(model.selectedManifest == nil || model.isExporting)
+
+            Button { model.showsFormatConverter = true } label: {
+                Label(tr("convert"), systemImage: "arrow.triangle.2.circlepath")
+            }
+            .buttonStyle(.bordered)
         }
         .padding(.horizontal, 16)
         .frame(height: 54)

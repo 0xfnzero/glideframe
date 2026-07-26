@@ -24,6 +24,7 @@ let package = Package(
                 .linkedFramework("VideoToolbox")
             ]
         ),
-        .executableTarget(name: "GlideFrameChecks", dependencies: ["GlideFrameKit"])
+        .executableTarget(name: "GlideFrameChecks", dependencies: ["GlideFrameKit"]),
+        .testTarget(name: "GlideFrameKitTests", dependencies: ["GlideFrameKit"])
     ]
 )

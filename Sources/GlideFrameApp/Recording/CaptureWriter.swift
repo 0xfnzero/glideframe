@@ -1,4 +1,5 @@
 @preconcurrency import AVFoundation
+@preconcurrency import CoreImage
 import CoreMedia
 import Foundation
 @preconcurrency import ScreenCaptureKit
@@ -31,8 +32,17 @@ final class CaptureWriter: NSObject, SCStreamOutput, @unchecked Sendable {
     private var paused = false
     private var isFinishing = false
     private var writtenDuration = CMTime.zero
+    private let previewProcessor: CapturePreviewProcessor?
 
-    init(url: URL, width: Int, height: Int, frameRate: Int, includeAudio: Bool) throws {
+    init(
+        url: URL,
+        width: Int,
+        height: Int,
+        frameRate: Int,
+        includeAudio: Bool,
+        previewHandler: (@Sendable (CGImage) -> Void)? = nil
+    ) throws {
+        previewProcessor = previewHandler.map(CapturePreviewProcessor.init(handler:))
         writer = try AVAssetWriter(outputURL: url, fileType: .mov)
         let videoSettings: [String: Any] = [
             AVVideoCodecKey: AVVideoCodecType.h264,
@@ -70,6 +80,7 @@ final class CaptureWriter: NSObject, SCStreamOutput, @unchecked Sendable {
 
     func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
         guard sampleBuffer.isValid, CMSampleBufferDataIsReady(sampleBuffer) else { return }
+        if type == .screen { previewProcessor?.consume(sampleBuffer) }
         let sourcePTS = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
 
         lock.lock()
@@ -133,6 +144,53 @@ final class CaptureWriter: NSObject, SCStreamOutput, @unchecked Sendable {
             throw WriterError.writerFailed(writer.error?.localizedDescription ?? "Video encoding failed.")
         }
         return max(0, writtenDuration.seconds)
+    }
+}
+
+private final class CapturePreviewProcessor: @unchecked Sendable {
+    private struct SampleBuffer: @unchecked Sendable {
+        let value: CMSampleBuffer
+    }
+
+    private let handler: @Sendable (CGImage) -> Void
+    private let context = CIContext(options: [.cacheIntermediates: false])
+    private let queue = DispatchQueue(label: "app.glideframe.capture.preview", qos: .userInitiated)
+    private let lock = NSLock()
+    private var lastSubmittedPTS = CMTime.invalid
+    private var isProcessing = false
+
+    init(handler: @escaping @Sendable (CGImage) -> Void) {
+        self.handler = handler
+    }
+
+    func consume(_ sampleBuffer: CMSampleBuffer) {
+        let pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        let shouldProcess = lock.withLock { () -> Bool in
+            guard !isProcessing else { return false }
+            if lastSubmittedPTS.isValid,
+               CMTimeSubtract(pts, lastSubmittedPTS).seconds < 0.125 {
+                return false
+            }
+            lastSubmittedPTS = pts
+            isProcessing = true
+            return true
+        }
+        guard shouldProcess else { return }
+
+        let buffer = SampleBuffer(value: sampleBuffer)
+        queue.async { [self, buffer] in
+            defer { lock.withLock { isProcessing = false } }
+            guard let pixelBuffer = CMSampleBufferGetImageBuffer(buffer.value) else { return }
+
+            let source = CIImage(cvPixelBuffer: pixelBuffer)
+            let longestEdge = max(source.extent.width, source.extent.height)
+            let scale = min(1, 1_280 / max(longestEdge, 1))
+            let image = scale < 1
+                ? source.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+                : source
+            guard let preview = context.createCGImage(image, from: image.extent) else { return }
+            handler(preview)
+        }
     }
 }
 
