@@ -2,7 +2,7 @@
 
 Thanks for helping improve GlideFrame Community Edition.
 
-This repository focuses on the public local-first recorder, editor, project format, export pipeline, contracts, and documentation. Commercial-only features such as hosted AI, account billing, proprietary cloud operations, team administration, and enterprise controls are planned for a separate private repository.
+This repository focuses on the public local-first recorder, editor, project format, export pipeline, contracts, and documentation. Hosted AI, account billing, proprietary cloud operations, team administration, and enterprise controls are outside the Community Edition scope.
 
 ## Good First Contribution Areas
 
@@ -47,10 +47,10 @@ swift run GlideFrameChecks
 
 - Keep changes scoped to one behavior or one documentation area.
 - Include tests when changing recording, project persistence, export, API contracts, or compatibility behavior.
-- Do not commit secrets, signing identities, `.env` files, customer data, generated build products, or private commercial implementation details.
+- Do not commit secrets, signing identities, `.env` files, customer data, generated build products, or non-public implementation details.
 - Keep public APIs and project-file changes backward-compatible when possible.
 - Document any project manifest migration.
 
 ## Public and Commercial Boundaries
 
-Community fixes that improve shared behavior should happen in this repository. Features that depend on hosted operations, private analytics, payment providers, commercial entitlement logic, or customer-specific deployment should stay out of this repository.
+Community fixes that improve shared behavior should happen in this repository. Features that depend on hosted operations, private analytics, payment providers, entitlement logic, or customer-specific deployment should stay out of this repository.

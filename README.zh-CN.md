@@ -2,11 +2,11 @@
 
 本地优先的 macOS 录屏与演示视频工具社区版，用于产品演示和教程制作。
 
-[English](README.md) | [中文](README.zh-CN.md) | [开发路线图](docs/OPEN_SOURCE_ROADMAP.md) | [仓库策略](docs/REPOSITORY_STRATEGY.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
+[English](README.md) | [中文](README.zh-CN.md) | [开发路线图](docs/OPEN_SOURCE_ROADMAP.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
 
 GlideFrame Community Edition 是原生 macOS 录屏与编辑应用的公开基础。目标是通过开放项目格式，让屏幕录制更可信、更容易本地编辑和导出。
 
-GlideFrame 采用 open-core 模式。公开仓库聚焦社区版录屏器、本地编辑器、项目格式、共享协议和开发文档。托管 AI、云分享、团队协作、商业发行和企业控制能力规划放在独立的闭源商业仓库。
+本仓库聚焦社区版录屏器、本地编辑器、项目格式、共享协议和开发文档。托管 AI、云分享、团队协作、商业发行和企业控制能力不属于 Community Edition 范围。
 
 项目仍处于早期阶段。当前仓库里仍保留了 API 和 Web 工作区原型代码，后续会按公开/闭源仓库边界继续拆分。
 
@@ -49,7 +49,7 @@ GlideFrame 采用 open-core 模式。公开仓库聚焦社区版录屏器、本�
 - 基于 FFmpeg 的批量媒体转换。
 - Fastify API、PostgreSQL-ready 存储、Redis/BullMQ worker 路径、S3 兼容对象存储适配器和 React/Vite 工作区原型。
 
-完整规划见 [社区版开发路线图](docs/OPEN_SOURCE_ROADMAP.md) 和 [仓库策略](docs/REPOSITORY_STRATEGY.md)。
+完整规划见 [社区版开发路线图](docs/OPEN_SOURCE_ROADMAP.md)。
 
 ## 环境要求
 
@@ -136,7 +136,7 @@ open GlideFrame.xcodeproj
 
 ## 云端原型开发
 
-API 原型默认使用本地开发设置和 `.data/storage`。托管云、AI 编排、权益、团队和企业能力规划放在闭源商业仓库。
+API 原型默认使用本地开发设置和 `.data/storage`。托管云、AI 编排、权益、团队和企业能力不属于 Community Edition 范围。
 
 如需使用本地基础设施：
 
@@ -180,7 +180,6 @@ swift run GlideFrameChecks
 ## 文档
 
 - [社区版开发路线图](docs/OPEN_SOURCE_ROADMAP.md)
-- [仓库策略](docs/REPOSITORY_STRATEGY.md)
 - [架构说明](docs/ARCHITECTURE.md)
 - [安全说明](docs/SECURITY.md)
 - [发布检查清单](docs/RELEASE_CHECKLIST.md)
@@ -194,7 +193,7 @@ swift run GlideFrameChecks
 
 ## 开源协议
 
-本仓库是 GlideFrame 的公开社区版仓库。GlideFrame 也规划一个独立的闭源商业仓库，该仓库不由本仓库授权。
+本仓库包含 GlideFrame Community Edition。本仓库之外的代码、服务、资产、文档和配置不由本仓库授权。
 
 - macOS 桌面应用：`MPL-2.0`。
 - 共享 contracts、schema、SDK、示例和集成客户端：`Apache-2.0`。

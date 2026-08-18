@@ -12,5 +12,5 @@
 ## Checklist
 
 - [ ] This change belongs in the Community Edition boundary.
-- [ ] No secrets, signing identities, `.env` files, generated build products, or private commercial details are included.
+- [ ] No secrets, signing identities, `.env` files, generated build products, or non-public implementation details are included.
 - [ ] Project-file or public contract changes are documented.

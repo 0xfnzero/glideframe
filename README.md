@@ -2,11 +2,11 @@
 
 Community Edition of a local-first macOS screen recorder for polished product demos and tutorials.
 
-[English](README.md) | [中文](README.zh-CN.md) | [Roadmap](docs/OPEN_SOURCE_ROADMAP.md) | [Repository Strategy](docs/REPOSITORY_STRATEGY.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
+[English](README.md) | [中文](README.zh-CN.md) | [Roadmap](docs/OPEN_SOURCE_ROADMAP.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
 
 GlideFrame Community Edition is the public foundation for a native macOS recording and editing app. The goal is to make screen recordings easy to trust, edit, and export locally through an open project format.
 
-GlideFrame uses an open-core model. This public repository focuses on the community recorder, local editor, project format, shared contracts, and developer documentation. Hosted AI, cloud sharing, team collaboration, commercial packaging, and enterprise controls are planned for a separate private commercial repository.
+This repository focuses on the community recorder, local editor, project format, shared contracts, and developer documentation. Hosted AI, cloud sharing, team collaboration, commercial packaging, and enterprise controls are outside the Community Edition scope.
 
 The project is early. This repository still contains prototype API and web workspace code while the public/private repository split is being planned.
 
@@ -49,7 +49,7 @@ Implemented vertical slice:
 - Batch media conversion through FFmpeg.
 - Prototype Fastify API, PostgreSQL-ready store, Redis/BullMQ worker path, S3-compatible storage adapter, and React/Vite workspace.
 
-See [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md) and [Repository Strategy](docs/REPOSITORY_STRATEGY.md) for the planned public/private split.
+See [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md) for the public development plan.
 
 ## Requirements
 
@@ -136,7 +136,7 @@ Before running from Xcode, open Xcode Settings, add an Apple ID, then select a d
 
 ## Prototype Cloud Development
 
-The prototype API defaults to local development settings and `.data/storage`. Hosted cloud, AI orchestration, entitlement, team, and enterprise features are planned for the private commercial repository.
+The prototype API defaults to local development settings and `.data/storage`. Hosted cloud, AI orchestration, entitlement, team, and enterprise features are outside the Community Edition scope.
 
 For infrastructure-backed development:
 
@@ -180,7 +180,6 @@ swift run GlideFrameChecks
 ## Documentation
 
 - [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md)
-- [Repository Strategy](docs/REPOSITORY_STRATEGY.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security](docs/SECURITY.md)
 - [Release Checklist](docs/RELEASE_CHECKLIST.md)
@@ -194,7 +193,7 @@ Issues, design notes, capture bug reports, local editing feedback, and project-f
 
 ## License
 
-This repository is the public Community Edition repository. GlideFrame also plans a separate private commercial repository that is not licensed by this repository.
+This repository contains GlideFrame Community Edition. Code, services, assets, documentation, and configuration outside this repository are not licensed by this repository.
 
 - macOS desktop application: `MPL-2.0`.
 - Shared contracts, schemas, SDKs, examples, and integration clients: `Apache-2.0`.

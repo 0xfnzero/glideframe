@@ -1,8 +1,8 @@
 # GlideFrame License
 
-This repository contains GlideFrame Community Edition, the public open-core foundation for GlideFrame.
+This repository contains GlideFrame Community Edition.
 
-GlideFrame also has a planned private commercial repository. Code, services, assets, documentation, and configuration that live only in the private commercial repository are not licensed by this file.
+Code, services, assets, documentation, and configuration outside this repository are not licensed by this file.
 
 Unless a file or directory says otherwise, files in this repository are licensed under:
 

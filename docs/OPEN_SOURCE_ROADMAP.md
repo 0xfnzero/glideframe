@@ -4,7 +4,7 @@ Status: planned, not committed to a release date.
 
 GlideFrame Community Edition is the public foundation for a trustworthy local-first macOS screen recorder and demo editor. It should be useful on its own, easy to build, and safe for contributors to inspect and extend.
 
-The Community Edition is no longer planned as the full product surface for AI, hosted cloud, team collaboration, billing, or enterprise administration. Those product layers are planned for a separate private commercial repository.
+The Community Edition is not planned as the full product surface for AI, hosted cloud, team collaboration, billing, or enterprise administration. Those product layers are outside this repository's public scope.
 
 ## Product Boundary
 
@@ -24,15 +24,6 @@ The public repository should not become responsible for:
 - Proprietary AI orchestration, cost controls, or provider routing.
 - Team administration, enterprise policy, SSO, SCIM, audit, or compliance workflows.
 - Private analytics, growth experiments, or App Store commercial packaging.
-
-## Repository Strategy
-
-- `glideframe`: public community repository.
-- `glideframe-commercial`: private commercial repository.
-- Shared public code should flow from the community repository into the commercial repository.
-- Bug fixes to shared recording, project-file, export, and compatibility logic should be upstreamed to the community repository whenever they do not expose private product logic.
-- Commercial-only features should depend on public contracts instead of modifying community internals in ways that make future merges painful.
-- Secrets, credentials, signing identities, payment integration code, private hosted infrastructure, and customer-specific configuration must stay out of the public repository.
 
 ## License Direction
 
@@ -55,7 +46,7 @@ Before public launch, review dependency licenses, contributor expectations, cont
 ## Phase 1: Public Core Cleanup
 
 - [ ] Decide the final public repository name and directory layout.
-- [ ] Move commercial-only code, secrets, payment flows, hosted operations, and private roadmap material into the private repository.
+- [ ] Keep commercial-only code, secrets, payment flows, hosted operations, and private roadmap material out of this repository.
 - [ ] Keep public build instructions working after the split.
 - [ ] Add `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `NOTICE`, issue templates, and a public security policy.
 - [ ] Add a contributor policy that preserves the ability to ship a separate commercial edition.
