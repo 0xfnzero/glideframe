@@ -1,6 +1,6 @@
 # GlideFrame License
 
-This repository contains GlideFrame Community Edition.
+This repository contains GlideFrame.
 
 Code, services, assets, documentation, and configuration outside this repository are not licensed by this file.
 

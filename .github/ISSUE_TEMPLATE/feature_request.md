@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an improvement for the Community Edition
+about: Suggest an improvement for GlideFrame
 title: "[Feature]: "
 labels: enhancement
 assignees: ""
@@ -15,7 +15,6 @@ assignees: ""
 ## Who benefits?
 
 
-## Community Edition fit
+## Project fit
 
 Does this belong in the local recorder, local editor, project format, export pipeline, public contracts, or documentation?
-

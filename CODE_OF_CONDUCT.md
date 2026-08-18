@@ -1,6 +1,6 @@
 # Code of Conduct
 
-GlideFrame Community Edition aims to be a practical, respectful, and focused open source project.
+GlideFrame aims to be a practical, respectful, and focused open source project.
 
 ## Expected Behavior
 

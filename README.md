@@ -1,14 +1,14 @@
 # GlideFrame
 
-Community Edition of a local-first macOS screen recorder for polished product demos and tutorials.
+Local-first macOS screen recorder for polished product demos and tutorials.
 
-[English](README.md) | [中文](README.zh-CN.md) | [Roadmap](docs/OPEN_SOURCE_ROADMAP.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
+[English](README.md) | [中文](README.zh-CN.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
 
-GlideFrame Community Edition is the public foundation for a native macOS recording and editing app. The goal is to make screen recordings easy to trust, edit, and export locally through an open project format.
+GlideFrame is a native macOS recording and editing app. The goal is to make screen recordings easy to trust, edit, and export locally through an open project format.
 
-This repository focuses on the community recorder, local editor, project format, shared contracts, and developer documentation. Hosted AI, cloud sharing, team collaboration, commercial packaging, and enterprise controls are outside the Community Edition scope.
+This repository focuses on the local recorder, editor, project format, shared contracts, and developer documentation.
 
-The project is early. This repository still contains prototype API and web workspace code while the public/private repository split is being planned.
+The project is early. This repository includes a native macOS app, shared contracts, prototype API code, a web workspace, and local development infrastructure.
 
 ## What This Project Is For
 
@@ -34,7 +34,7 @@ Planned differentiators include:
 - Camera bubble layouts for product walkthroughs.
 - Backgrounds, frames, aspect ratios, and reusable visual presets.
 - Extension points for captions, transcripts, AI adapters, and publish targets.
-- Local-first projects that can be opened by future commercial and integration workflows.
+- Local-first projects that can be opened by future integrations.
 
 ## Current Status
 
@@ -49,7 +49,7 @@ Implemented vertical slice:
 - Batch media conversion through FFmpeg.
 - Prototype Fastify API, PostgreSQL-ready store, Redis/BullMQ worker path, S3-compatible storage adapter, and React/Vite workspace.
 
-See [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md) for the public development plan.
+See [Roadmap](docs/ROADMAP.md) for the public development plan.
 
 ## Requirements
 
@@ -136,7 +136,7 @@ Before running from Xcode, open Xcode Settings, add an Apple ID, then select a d
 
 ## Prototype Cloud Development
 
-The prototype API defaults to local development settings and `.data/storage`. Hosted cloud, AI orchestration, entitlement, team, and enterprise features are outside the Community Edition scope.
+The prototype API defaults to local development settings and `.data/storage`.
 
 For infrastructure-backed development:
 
@@ -179,7 +179,7 @@ swift run GlideFrameChecks
 
 ## Documentation
 
-- [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md)
+- [Roadmap](docs/ROADMAP.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security](docs/SECURITY.md)
 - [Release Checklist](docs/RELEASE_CHECKLIST.md)
@@ -193,11 +193,11 @@ Issues, design notes, capture bug reports, local editing feedback, and project-f
 
 ## License
 
-This repository contains GlideFrame Community Edition. Code, services, assets, documentation, and configuration outside this repository are not licensed by this repository.
+This repository contains GlideFrame. Code, services, assets, documentation, and configuration outside this repository are not licensed by this repository.
 
 - macOS desktop application: `MPL-2.0`.
 - Shared contracts, schemas, SDKs, examples, and integration clients: `Apache-2.0`.
 - Public server or web prototypes that remain in this repository: `AGPL-3.0-or-later`.
 - Brand assets, logos, names, icons, and website identity: [trademark and brand policy](TRADEMARKS.md).
 
-See [LICENSE.md](LICENSE.md) for the full license map and [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md#license-direction) for the rationale.
+See [LICENSE.md](LICENSE.md) for the full license map and [Roadmap](docs/ROADMAP.md#license-direction) for the rationale.

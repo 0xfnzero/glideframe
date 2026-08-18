@@ -1,8 +1,8 @@
-# Contributing to GlideFrame Community Edition
+# Contributing to GlideFrame
 
-Thanks for helping improve GlideFrame Community Edition.
+Thanks for helping improve GlideFrame.
 
-This repository focuses on the public local-first recorder, editor, project format, export pipeline, contracts, and documentation. Hosted AI, account billing, proprietary cloud operations, team administration, and enterprise controls are outside the Community Edition scope.
+This repository focuses on the local-first recorder, editor, project format, export pipeline, contracts, and documentation.
 
 ## Good First Contribution Areas
 
@@ -51,6 +51,6 @@ swift run GlideFrameChecks
 - Keep public APIs and project-file changes backward-compatible when possible.
 - Document any project manifest migration.
 
-## Public and Commercial Boundaries
+## Scope
 
-Community fixes that improve shared behavior should happen in this repository. Features that depend on hosted operations, private analytics, payment providers, entitlement logic, or customer-specific deployment should stay out of this repository.
+Changes should fit the local-first recorder, editor, export pipeline, project format, public contracts, or documentation. Do not include secrets, customer data, hosted operations, analytics systems, or customer-specific deployment details.

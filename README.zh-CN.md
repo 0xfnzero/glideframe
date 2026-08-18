@@ -1,14 +1,14 @@
 # GlideFrame
 
-本地优先的 macOS 录屏与演示视频工具社区版，用于产品演示和教程制作。
+本地优先的 macOS 录屏与演示视频工具，用于产品演示和教程制作。
 
-[English](README.md) | [中文](README.zh-CN.md) | [开发路线图](docs/OPEN_SOURCE_ROADMAP.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
+[English](README.md) | [中文](README.zh-CN.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
 
-GlideFrame Community Edition 是原生 macOS 录屏与编辑应用的公开基础。目标是通过开放项目格式，让屏幕录制更可信、更容易本地编辑和导出。
+GlideFrame 是原生 macOS 录屏与编辑应用。目标是通过开放项目格式，让屏幕录制更可信、更容易本地编辑和导出。
 
-本仓库聚焦社区版录屏器、本地编辑器、项目格式、共享协议和开发文档。托管 AI、云分享、团队协作、商业发行和企业控制能力不属于 Community Edition 范围。
+本仓库聚焦本地录屏器、编辑器、项目格式、共享协议和开发文档。
 
-项目仍处于早期阶段。当前仓库里仍保留了 API 和 Web 工作区原型代码，后续会按公开/闭源仓库边界继续拆分。
+项目仍处于早期阶段。当前仓库包含原生 macOS 应用、共享协议、API 原型、Web 工作区和本地开发基础设施。
 
 ## 项目适合做什么
 
@@ -34,7 +34,7 @@ GlideFrame Community Edition 是原生 macOS 录屏与编辑应用的公开基�
 - 适合产品讲解的摄像头气泡布局。
 - 背景、边框、画面比例和可复用视觉预设。
 - 字幕、转写、AI adapter 和发布目标的扩展点。
-- 本地优先的项目文件，未来可被商业版和第三方集成工作流打开。
+- 本地优先的项目文件，未来可被第三方集成工作流打开。
 
 ## 当前状态
 
@@ -49,7 +49,7 @@ GlideFrame Community Edition 是原生 macOS 录屏与编辑应用的公开基�
 - 基于 FFmpeg 的批量媒体转换。
 - Fastify API、PostgreSQL-ready 存储、Redis/BullMQ worker 路径、S3 兼容对象存储适配器和 React/Vite 工作区原型。
 
-完整规划见 [社区版开发路线图](docs/OPEN_SOURCE_ROADMAP.md)。
+完整规划见 [开发路线图](docs/ROADMAP.md)。
 
 ## 环境要求
 
@@ -136,7 +136,7 @@ open GlideFrame.xcodeproj
 
 ## 云端原型开发
 
-API 原型默认使用本地开发设置和 `.data/storage`。托管云、AI 编排、权益、团队和企业能力不属于 Community Edition 范围。
+API 原型默认使用本地开发设置和 `.data/storage`。
 
 如需使用本地基础设施：
 
@@ -179,7 +179,7 @@ swift run GlideFrameChecks
 
 ## 文档
 
-- [社区版开发路线图](docs/OPEN_SOURCE_ROADMAP.md)
+- [开发路线图](docs/ROADMAP.md)
 - [架构说明](docs/ARCHITECTURE.md)
 - [安全说明](docs/SECURITY.md)
 - [发布检查清单](docs/RELEASE_CHECKLIST.md)
@@ -193,11 +193,11 @@ swift run GlideFrameChecks
 
 ## 开源协议
 
-本仓库包含 GlideFrame Community Edition。本仓库之外的代码、服务、资产、文档和配置不由本仓库授权。
+本仓库包含 GlideFrame。本仓库之外的代码、服务、资产、文档和配置不由本仓库授权。
 
 - macOS 桌面应用：`MPL-2.0`。
 - 共享 contracts、schema、SDK、示例和集成客户端：`Apache-2.0`。
 - 仍保留在本仓库中的公开 server 或 web 原型代码：`AGPL-3.0-or-later`。
 - 品牌资产、Logo、名称、图标和官网视觉：[商标和品牌政策](TRADEMARKS.md)。
 
-完整协议映射见 [LICENSE.md](LICENSE.md)，选择原因见 [社区版开发路线图](docs/OPEN_SOURCE_ROADMAP.md#license-direction)。
+完整协议映射见 [LICENSE.md](LICENSE.md)，选择原因见 [开发路线图](docs/ROADMAP.md#license-direction)。
