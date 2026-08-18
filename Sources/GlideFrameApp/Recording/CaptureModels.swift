@@ -14,6 +14,27 @@ struct CaptureTargetDescriptor: Identifiable, Hashable {
     let nativeID: UInt32
     let selectionDisplayID: UInt32
     let selectionFrame: CGRect
+    let bundleIdentifier: String?
+
+    init(
+        id: String,
+        kind: CaptureTargetKind,
+        title: String,
+        subtitle: String,
+        nativeID: UInt32,
+        selectionDisplayID: UInt32,
+        selectionFrame: CGRect,
+        bundleIdentifier: String? = nil
+    ) {
+        self.id = id
+        self.kind = kind
+        self.title = title
+        self.subtitle = subtitle
+        self.nativeID = nativeID
+        self.selectionDisplayID = selectionDisplayID
+        self.selectionFrame = selectionFrame
+        self.bundleIdentifier = bundleIdentifier
+    }
 }
 
 struct RecordingOptions: Equatable {

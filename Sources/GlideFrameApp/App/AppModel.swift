@@ -15,6 +15,7 @@ final class AppModel: ObservableObject {
     @Published var isLoadingCaptureTargets = false
     @Published var screenCaptureAccessUnavailable = false
     @Published var captureTargetError: String?
+    @Published var recordingStartError: String?
     @Published var notice: AppNotice?
     @Published var recoveredProjectCount = 0
 
@@ -87,6 +88,8 @@ final class AppModel: ObservableObject {
     }
 
     func startRecording() async {
+        guard !recordingEngine.state.isActive else { return }
+        recordingStartError = nil
         do {
             let formatter = DateFormatter()
             formatter.dateFormat = "MMM d, HH:mm"
@@ -105,6 +108,9 @@ final class AppModel: ObservableObject {
             showsRecordingSetup = false
         } catch {
             if let activePackageURL { try? await repository.clearRecoveryJournal(at: activePackageURL) }
+            activeManifest = nil
+            activePackageURL = nil
+            recordingStartError = error.localizedDescription
             notice = .error(error.localizedDescription)
         }
     }

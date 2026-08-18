@@ -1,48 +1,130 @@
 # GlideFrame
 
-GlideFrame is a local-first macOS screen recorder for polished product demos. This repository contains the native recorder/editor, the commercial API, and the cloud sharing workspace.
+Community Edition of a local-first macOS screen recorder for polished product demos and tutorials.
 
-## Implemented Vertical Slice
+[English](README.md) | [中文](README.zh-CN.md) | [Roadmap](docs/OPEN_SOURCE_ROADMAP.md) | [Repository Strategy](docs/REPOSITORY_STRATEGY.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
 
-- Native Swift 6 macOS app using ScreenCaptureKit, AVFoundation, VideoToolbox, SwiftUI, and AppKit.
-- Display/window capture, system audio, separate microphone/camera files, pause/resume, pointer event capture, and recovery journals.
-- Versioned `.svproject` packages, non-destructive trim graph, click-driven automatic zooms, canvas styles, bilingual UI, and MP4 H.264/HEVC export with mixed audio.
-- Batch media conversion through FFmpeg with progress and cancellation: MP4, MOV, MKV, WebM, AVI, M4V, MPEG-TS, WMV, FLV, GIF, MP3, M4A, WAV, FLAC, Ogg, and Opus outputs.
-- Fastify API with magic links, signed entitlements, quotas, multipart local/S3 uploads, password/expiry protected shares, analytics, AI jobs, Paddle webhooks, and checkout creation.
-- PostgreSQL production store, Redis/BullMQ worker, S3 adapter, Resend mail adapter, Vite/React cloud workspace, and responsive video viewer.
+GlideFrame Community Edition is the public foundation for a native macOS recording and editing app. The goal is to make screen recordings easy to trust, edit, and export locally through an open project format.
 
-## Local Development
+GlideFrame uses an open-core model. This public repository focuses on the community recorder, local editor, project format, shared contracts, and developer documentation. Hosted AI, cloud sharing, team collaboration, commercial packaging, and enterprise controls are planned for a separate private commercial repository.
 
-Requirements: macOS 14+, Apple Silicon, Swift 6, Node.js 22+, and full Xcode for running the signed macOS application.
+The project is early. This repository still contains prototype API and web workspace code while the public/private repository split is being planned.
+
+## What This Project Is For
+
+| Area | Coverage |
+| --- | --- |
+| Desktop recording | Native macOS app built with SwiftUI, AppKit, ScreenCaptureKit, AVFoundation, and VideoToolbox |
+| Demo editing | `.svproject` packages, non-destructive edit graph, automatic zoom data, canvas styles, trimming model, export pipeline |
+| Capture sources | Displays, app windows, selected regions, system audio, microphone, camera, cursor and pointer events |
+| Media output | H.264/HEVC export, mixed audio, local project recovery, FFmpeg-backed conversion tools |
+| Public contracts | Shared schemas and integration surfaces that keep project files portable |
+| Extension direction | Provider-agnostic hooks for captions, transcript import/export, AI adapters, and publish targets |
+
+## Why GlideFrame
+
+Basic screen recording is already solved by macOS, OBS, meeting apps, and browser tools. GlideFrame focuses on the step after recording: turning raw screen capture into a polished product demo or tutorial.
+
+Useful search terms for this project include macOS screen recorder, ScreenCaptureKit recorder, SwiftUI video editor, product demo recorder, tutorial video editor, local-first screen capture, and open project format.
+
+Planned differentiators include:
+
+- Automatic zooms around important clicks and regions.
+- Clean cursor emphasis and pointer-path polish.
+- Camera bubble layouts for product walkthroughs.
+- Backgrounds, frames, aspect ratios, and reusable visual presets.
+- Extension points for captions, transcripts, AI adapters, and publish targets.
+- Local-first projects that can be opened by future commercial and integration workflows.
+
+## Current Status
+
+Implemented vertical slice:
+
+- Native Swift 6 macOS app.
+- Display/window capture with ScreenCaptureKit.
+- System audio capture plus separate microphone and camera files.
+- Pause, resume, stop, recovery journals, and project persistence.
+- Versioned `.svproject` packages.
+- Pointer event capture and automatic zoom keyframe data.
+- Batch media conversion through FFmpeg.
+- Prototype Fastify API, PostgreSQL-ready store, Redis/BullMQ worker path, S3-compatible storage adapter, and React/Vite workspace.
+
+See [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md) and [Repository Strategy](docs/REPOSITORY_STRATEGY.md) for the planned public/private split.
+
+## Requirements
+
+- macOS 14+
+- Apple Silicon Mac recommended
+- Xcode with Swift 6 toolchain
+- Node.js 22+
+- Docker, for local infrastructure
+- FFmpeg and ffprobe, for local conversion workflows
+
+Install FFmpeg with Homebrew:
+
+```bash
+brew install ffmpeg
+```
+
+## Quick Start
+
+Clone and install dependencies:
 
 ```bash
 npm install
-npm run dev:api
-npm run dev:web
 ```
 
-Open [http://127.0.0.1:3000](http://127.0.0.1:3000). In development, request a magic link and use the displayed development continuation button.
-
-The API defaults to an in-memory store and `.data/storage`. For production-like infrastructure:
+Show available commands:
 
 ```bash
-docker compose up -d
-cp apps/api/.env.example apps/api/.env
-npm run db:migrate -w @glideframe/api
+make
 ```
 
-Set `DATABASE_URL`, `REDIS_URL`, AWS credentials, the S3/MinIO fields, Paddle price IDs, and Resend credentials in the process environment. No credential belongs in the repository.
-
-## macOS Application
-
-The Swift Package can compile shared logic with Command Line Tools:
+Run the macOS app as a real `.app` bundle:
 
 ```bash
-swift build --target GlideFrameApp
-swift run GlideFrameChecks
+make mac
 ```
 
-For a permission-aware `.app`, install XcodeGen, generate the project, then open it in full Xcode:
+Run the API and web workspace:
+
+```bash
+make start
+```
+
+Open the web workspace:
+
+```text
+http://127.0.0.1:3000
+```
+
+## Development Commands
+
+| Command | Description |
+| --- | --- |
+| `make` | Print all available commands |
+| `make mac` | Build and open the signed macOS app bundle |
+| `make mac-swift` | Run the SwiftPM executable without an app bundle |
+| `make start` | Start API and web dev servers |
+| `make api` | Start only the API server |
+| `make web` | Start only the web app |
+| `make infra` | Start local PostgreSQL, Redis, and object-storage services |
+| `make migrate` | Run API database migrations |
+| `make typecheck` | Type-check TypeScript workspaces |
+| `make test` | Run API and Swift tests |
+| `make build` | Build web/API workspaces |
+
+## macOS App Development
+
+For permission-aware screen recording, run the generated Xcode project or use:
+
+```bash
+make mac
+```
+
+Screen recording, microphone, and camera permissions are tied to the app bundle identity. `swift run` is useful for quick debugging, but it does not behave like a normal macOS app bundle in Dock, signing, and permission flows.
+
+If the project needs to be regenerated:
 
 ```bash
 brew install xcodegen
@@ -50,15 +132,39 @@ xcodegen generate
 open GlideFrame.xcodeproj
 ```
 
-Before running, open Xcode Settings > Accounts, add an Apple ID, then select its free Personal Team under the GlideFrame target's Signing & Capabilities tab. A paid Apple Developer membership is not required for local testing. Without a development team, Xcode uses an ad-hoc signature that changes between builds, so macOS may show screen recording as enabled while treating the latest build as a different application. Screen recording, microphone, and camera permission prompts also require the generated app bundle and its `Info.plist`.
+Before running from Xcode, open Xcode Settings, add an Apple ID, then select a development team under the GlideFrame target's Signing & Capabilities tab.
 
-Local format conversion also requires FFmpeg and ffprobe:
+## Prototype Cloud Development
+
+The prototype API defaults to local development settings and `.data/storage`. Hosted cloud, AI orchestration, entitlement, team, and enterprise features are planned for the private commercial repository.
+
+For infrastructure-backed development:
 
 ```bash
-brew install ffmpeg
+make infra
+cp apps/api/.env.example apps/api/.env
+make migrate
+make start
 ```
 
-GlideFrame finds Homebrew on Apple Silicon and Intel Macs. Release builds should bundle a separately built and legally reviewed FFmpeg/ffprobe pair in `GlideFrame.app/Contents/Resources/Tools`; do not redistribute a Homebrew binary without reviewing its configured GPL dependencies.
+Set environment variables such as database URL, Redis URL, object storage settings, email settings, and AI provider settings in your local environment or `.env` file. Do not commit secrets.
+
+## Project Structure
+
+```text
+.
+├── Sources/GlideFrameApp      Native macOS app
+├── Sources/GlideFrameKit      Shared Swift project, export, and media logic
+├── Sources/GlideFrameChecks   Local verification executable
+├── Tests/                     Swift tests
+├── apps/api                   Fastify API and worker code
+├── apps/web                   React/Vite web workspace
+├── packages/contracts         Shared TypeScript contracts
+├── docs                       Architecture, security, release, and roadmap docs
+├── macos                      macOS plist and entitlements
+├── docker-compose.yml         Local infrastructure
+└── project.yml                XcodeGen project definition
+```
 
 ## Verification
 
@@ -66,10 +172,33 @@ GlideFrame finds Homebrew on Apple Silicon and Intel Macs. Release builds should
 npm test
 npm run typecheck
 npm run build
-npm audit
 swift build --target GlideFrameApp
 swift test
 swift run GlideFrameChecks
 ```
 
-See [architecture](docs/ARCHITECTURE.md), [security](docs/SECURITY.md), the [commercial roadmap](docs/COMMERCIAL_ROADMAP.md), and the [release checklist](docs/RELEASE_CHECKLIST.md) before production deployment.
+## Documentation
+
+- [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md)
+- [Repository Strategy](docs/REPOSITORY_STRATEGY.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Security](docs/SECURITY.md)
+- [Release Checklist](docs/RELEASE_CHECKLIST.md)
+
+## Community
+
+- Discord: [https://discord.gg/2YzakxfyaC](https://discord.gg/2YzakxfyaC)
+- Telegram: [https://t.me/open_fnzero](https://t.me/open_fnzero)
+
+Issues, design notes, capture bug reports, local editing feedback, and project-format feedback are welcome.
+
+## License
+
+This repository is the public Community Edition repository. GlideFrame also plans a separate private commercial repository that is not licensed by this repository.
+
+- macOS desktop application: `MPL-2.0`.
+- Shared contracts, schemas, SDKs, examples, and integration clients: `Apache-2.0`.
+- Public server or web prototypes that remain in this repository: `AGPL-3.0-or-later`.
+- Brand assets, logos, names, icons, and website identity: [trademark and brand policy](TRADEMARKS.md).
+
+See [LICENSE.md](LICENSE.md) for the full license map and [Community Edition Roadmap](docs/OPEN_SOURCE_ROADMAP.md#license-direction) for the rationale.

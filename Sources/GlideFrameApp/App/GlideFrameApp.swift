@@ -1,7 +1,29 @@
+import AppKit
 import SwiftUI
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.regular)
+        bringAppToFront()
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        sender.setActivationPolicy(.regular)
+        bringAppToFront()
+        return true
+    }
+
+    private func bringAppToFront() {
+        DispatchQueue.main.async {
+            NSApp.windows.forEach { $0.makeKeyAndOrderFront(nil) }
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+}
 
 @main
 struct GlideFrameApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var model = AppModel()
     @AppStorage("app.language") private var language = "system"
 

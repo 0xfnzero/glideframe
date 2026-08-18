@@ -4,7 +4,6 @@ import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams, useSear
 import { Workspace } from "../app/dashboard/workspace";
 import { Player } from "../app/watch/[token]/player";
 import "../app/globals.css";
-import "./upgrade.css";
 
 const API=import.meta.env.VITE_API_URL??"http://127.0.0.1:4100";
 function WatchRoute(){const {token}=useParams();return token?<Player token={token}/>:<Navigate to="/dashboard" replace/>}

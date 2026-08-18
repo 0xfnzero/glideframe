@@ -22,7 +22,7 @@ import { createMailer, type MagicLinkMailer } from "./email.js";
 import { MemoryStore } from "./memory-store.js";
 import type { ObjectStore } from "./object-store.js";
 import { LocalObjectStore } from "./object-store.js";
-import { createAccessToken, createShareToken, hashPassword, sha256, verifyPaddleSignature, verifyPassword, verifyToken } from "./security.js";
+import { createAccessToken, createShareToken, hashPassword, sha256, verifyPassword, verifyToken } from "./security.js";
 
 export type ServerDependencies = {
   config: AppConfig;
@@ -33,8 +33,6 @@ export type ServerDependencies = {
   now?: () => Date;
 };
 
-type RawRequest = FastifyRequest & { rawBody?: Buffer };
-
 export async function createServer(dependencies: ServerDependencies) {
   const { config } = dependencies;
   const store = dependencies.store ?? new MemoryStore();
@@ -44,9 +42,8 @@ export async function createServer(dependencies: ServerDependencies) {
   const app = Fastify({ logger: config.NODE_ENV !== "test", bodyLimit: 16 * 1024 * 1024 });
   const mailer = dependencies.mailer ?? createMailer(config, (fields, message) => app.log.info(fields, message));
 
-  app.addContentTypeParser("application/json", { parseAs: "buffer" }, (request, body, done) => {
+  app.addContentTypeParser("application/json", { parseAs: "buffer" }, (_request, body, done) => {
     try {
-      (request as RawRequest).rawBody = body as Buffer;
       done(null, JSON.parse((body as Buffer).toString("utf8")));
     } catch (error) { done(error as Error, undefined); }
   });
@@ -81,30 +78,6 @@ export async function createServer(dependencies: ServerDependencies) {
   app.get("/v1/entitlements", async (request) => {
     const userId = await requireUser(request, config.JWT_SECRET);
     return store.getEntitlement(userId);
-  });
-
-  app.get("/v1/billing/plans", async () => ({
-    currency: "USD",
-    plans: [
-      { id: "pro-monthly", amount: 15, interval: "month", aiMinutes: 180, storageGB: 50, devices: 3 },
-      { id: "pro-annual", amount: 144, interval: "year", aiMinutes: 180, storageGB: 50, devices: 3 }
-    ]
-  }));
-
-  app.post("/v1/billing/checkout", async (request, reply) => {
-    const userId = await requireUser(request, config.JWT_SECRET);
-    const input = z.object({ price: z.enum(["monthly", "annual"]) }).parse(request.body);
-    const priceId = input.price === "monthly" ? config.PADDLE_PRO_MONTHLY_PRICE_ID : config.PADDLE_PRO_ANNUAL_PRICE_ID;
-    if (!config.PADDLE_API_KEY || !priceId) return reply.code(503).send({ error: "billing_not_configured" });
-    const baseURL = config.PADDLE_ENV === "sandbox" ? "https://sandbox-api.paddle.com" : "https://api.paddle.com";
-    const response = await fetch(`${baseURL}/transactions`, {
-      method: "POST",
-      headers: { authorization: `Bearer ${config.PADDLE_API_KEY}`, "content-type": "application/json" },
-      body: JSON.stringify({ items: [{ price_id: priceId, quantity: 1 }], custom_data: { user_id: userId }, checkout: { url: `${config.WEB_URL}/dashboard?billing=complete` } })
-    });
-    if (!response.ok) { app.log.error({ status: response.status }, "Paddle checkout creation failed"); return reply.code(502).send({ error: "checkout_unavailable" }); }
-    const transaction = z.object({ data: z.object({ checkout: z.object({ url: z.string().url() }) }) }).parse(await response.json());
-    return { checkoutUrl: transaction.data.checkout.url };
   });
 
   app.post("/v1/uploads", async (request, reply) => {
@@ -225,20 +198,6 @@ export async function createServer(dependencies: ServerDependencies) {
     return job;
   });
 
-  app.post("/v1/billing/paddle/webhook", async (request, reply) => {
-    if (!config.PADDLE_WEBHOOK_SECRET) return reply.code(503).send({ error: "billing_not_configured" });
-    const signature = request.headers["paddle-signature"];
-    const rawBody = (request as RawRequest).rawBody;
-    if (typeof signature !== "string" || !rawBody || !verifyPaddleSignature(rawBody, signature, config.PADDLE_WEBHOOK_SECRET)) {
-      return reply.code(401).send({ error: "invalid_signature" });
-    }
-    const event = paddleEventSchema.parse(request.body);
-    if (!(await store.markWebhookProcessed(event.event_id))) return reply.code(204).send();
-    const status = mapPaddleStatus(event.data.status);
-    await store.setPlan(event.data.custom_data.user_id, "pro", status, event.data.next_billed_at ?? null);
-    return reply.code(204).send();
-  });
-
   app.get<{ Params: { key: string } }>("/v1/media/:key", async (request, reply) => {
     if (!objects.localPath) return reply.code(404).send({ error: "not_found" });
     try {
@@ -291,16 +250,4 @@ async function activeShare(store: Store, token: string, now: Date, reply: { code
     return null;
   }
   return share;
-}
-
-const paddleEventSchema = z.object({
-  event_id: z.string(),
-  event_type: z.string(),
-  data: z.object({ status: z.string(), next_billed_at: z.string().datetime().nullable().optional(), custom_data: z.object({ user_id: z.string().uuid() }) })
-});
-function mapPaddleStatus(status: string): "active" | "trialing" | "past_due" | "canceled" {
-  if (status === "trialing") return "trialing";
-  if (status === "past_due" || status === "paused") return "past_due";
-  if (status === "canceled") return "canceled";
-  return "active";
 }

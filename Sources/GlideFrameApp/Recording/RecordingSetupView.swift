@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct RecordingSetupView: View {
@@ -114,12 +115,18 @@ struct RecordingSetupView: View {
 
             Divider()
             HStack {
+                if let message = startStatusMessage {
+                    Label(message, systemImage: startStatusIcon)
+                        .font(.callout)
+                        .foregroundStyle(startStatusColor)
+                        .lineLimit(2)
+                }
                 Spacer()
                 Button(tr("cancel")) { dismiss() }
                 Button {
                     Task { await model.startRecording() }
                 } label: {
-                    Label(tr("start_recording"), systemImage: "record.circle")
+                    Label(startButtonTitle, systemImage: startButtonIcon)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
@@ -135,6 +142,60 @@ struct RecordingSetupView: View {
         .frame(width: 700, height: 530)
         .task { await model.reloadTargets() }
         .onDisappear { regionSelector?.cancel() }
+    }
+
+    private var startButtonTitle: String {
+        switch model.recordingEngine.state {
+        case .preparing:
+            tr("preparing_recording")
+        case .countdown(let remaining):
+            String(format: tr("recording_countdown"), remaining)
+        case .recording, .paused:
+            tr("recording_in_progress")
+        case .finalizing:
+            tr("finalizing_recording")
+        case .idle, .failed:
+            tr("start_recording")
+        }
+    }
+
+    private var startButtonIcon: String {
+        model.recordingEngine.state.isActive ? "hourglass" : "record.circle"
+    }
+
+    private var startStatusMessage: String? {
+        switch model.recordingEngine.state {
+        case .preparing:
+            tr("preparing_recording")
+        case .countdown(let remaining):
+            String(format: tr("recording_countdown"), remaining)
+        case .recording, .paused:
+            tr("recording_in_progress")
+        case .finalizing:
+            tr("finalizing_recording")
+        case .failed(let message):
+            message
+        case .idle:
+            model.recordingStartError
+        }
+    }
+
+    private var startStatusIcon: String {
+        switch model.recordingEngine.state {
+        case .failed:
+            "exclamationmark.triangle"
+        default:
+            model.recordingStartError == nil ? "hourglass" : "exclamationmark.triangle"
+        }
+    }
+
+    private var startStatusColor: Color {
+        switch model.recordingEngine.state {
+        case .failed:
+            .red
+        default:
+            model.recordingStartError == nil ? .secondary : .red
+        }
     }
 
     private var selectedTarget: CaptureTargetDescriptor? {
@@ -192,8 +253,7 @@ private struct TargetRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Image(systemName: target.kind == .window ? "macwindow" : "display")
-                    .frame(width: 24)
+                TargetIcon(target: target)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(target.title).lineLimit(1)
                     Text(target.subtitle).font(.caption).foregroundStyle(.secondary).lineLimit(1)
@@ -206,5 +266,42 @@ private struct TargetRow: View {
             .background(selected ? Color.accentColor.opacity(0.12) : .clear, in: RoundedRectangle(cornerRadius: 6))
         }
         .buttonStyle(.plain)
+    }
+}
+
+private struct TargetIcon: View {
+    let target: CaptureTargetDescriptor
+
+    var body: some View {
+        ZStack {
+            if let appIcon {
+                Image(nsImage: appIcon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 32, height: 32)
+            } else {
+                Image(systemName: target.kind == .window ? "macwindow" : "display")
+                    .font(.system(size: 24, weight: .regular))
+                    .foregroundStyle(.primary)
+            }
+        }
+        .frame(width: 36, height: 36)
+    }
+
+    private var appIcon: NSImage? {
+        guard target.kind == .window else { return nil }
+
+        if let bundleIdentifier = target.bundleIdentifier,
+           let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) {
+            return NSWorkspace.shared.icon(forFile: appURL.path)
+        }
+
+        if let runningApp = NSWorkspace.shared.runningApplications.first(where: {
+            $0.localizedName == target.subtitle || $0.localizedName == target.title
+        }), let bundleURL = runningApp.bundleURL {
+            return NSWorkspace.shared.icon(forFile: bundleURL.path)
+        }
+
+        return nil
     }
 }

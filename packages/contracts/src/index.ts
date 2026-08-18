@@ -1,11 +1,11 @@
 import { z } from "zod";
 
-export const planSchema = z.enum(["free", "pro"]);
+export const planSchema = z.enum(["community"]);
 export type Plan = z.infer<typeof planSchema>;
 
 export const entitlementSchema = z.object({
   plan: planSchema,
-  status: z.enum(["active", "trialing", "past_due", "canceled"]),
+  status: z.enum(["active"]),
   expiresAt: z.string().datetime().nullable(),
   maxRecordingSeconds: z.number().int().positive().nullable(),
   maxExportHeight: z.number().int().positive(),

@@ -22,6 +22,10 @@
 "microphone" = "麦克风";
 "camera" = "摄像头";
 "countdown" = "倒计时";
+"preparing_recording" = "正在准备录制…";
+"recording_countdown" = "%d 秒后开始录制";
+"recording_in_progress" = "正在录制";
+"finalizing_recording" = "正在保存录制…";
 "start_recording" = "开始录制";
 "pause" = "暂停";
 "resume" = "继续";

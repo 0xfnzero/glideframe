@@ -63,7 +63,7 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
                 )
             }
             let windows = content.windows
-                .filter { $0.frame.width >= 320 && $0.frame.height >= 180 && $0.owningApplication?.bundleIdentifier != Bundle.main.bundleIdentifier }
+                .filter(Self.isUsefulCaptureWindow)
                 .compactMap { window -> CaptureTargetDescriptor? in
                     guard let display = Self.display(containing: window.frame, from: content.displays) else {
                         return nil
@@ -79,7 +79,8 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
                         subtitle: window.owningApplication?.applicationName ?? "",
                         nativeID: window.windowID,
                         selectionDisplayID: display.displayID,
-                        selectionFrame: selectionFrame
+                        selectionFrame: selectionFrame,
+                        bundleIdentifier: window.owningApplication?.bundleIdentifier
                     )
                 }
             targets = displays + windows
@@ -131,7 +132,7 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
             if descriptor.kind == .window { configuration.ignoreShadowsSingleWindow = true }
 
             let sources = packageURL.appending(path: "Sources", directoryHint: .isDirectory)
-            let videoURL = sources.appending(path: "screen-\(Int(Date().timeIntervalSince1970)).mov")
+            let videoURL = sources.appending(path: "screen-\(UUID().uuidString).mov")
             let writer = try CaptureWriter(
                 url: videoURL,
                 width: selection.width,
@@ -196,9 +197,23 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
         state = .finalizing
         pointerTracker.stop()
         microphoneRecorder.stop()
-        try await stream?.stopCapture()
+        let streamStopError: Error?
+        do {
+            try await stream?.stopCapture()
+            streamStopError = nil
+        } catch {
+            streamStopError = error
+        }
         try? await cameraRecorder.stop()
-        let duration = try await writer.finish()
+
+        let duration: TimeInterval
+        do {
+            duration = try await writer.finish()
+        } catch {
+            cleanupAfterFailure()
+            state = .failed(error.localizedDescription)
+            throw error
+        }
 
         var sources: [MediaSource] = []
         if let videoURL {
@@ -213,6 +228,9 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
         let events = pointerTracker.events.filter { $0.time <= duration }
         cleanup()
         state = .idle
+        if let streamStopError {
+            NSLog("GlideFrame stream stopped with recoverable error after finalizing recording: \(streamStopError.localizedDescription)")
+        }
         return (sources, events, duration)
     }
 
@@ -236,6 +254,22 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
         let nsError = error as NSError
         return nsError.domain == SCStreamErrorDomain
             && nsError.code == SCStreamError.Code.userDeclined.rawValue
+    }
+
+    private static func isUsefulCaptureWindow(_ window: SCWindow) -> Bool {
+        guard window.frame.width >= 320,
+              window.frame.height >= 180
+        else { return false }
+
+        let app = window.owningApplication
+        let bundleIdentifier = app?.bundleIdentifier
+        let appName = app?.applicationName ?? ""
+
+        if bundleIdentifier == Bundle.main.bundleIdentifier { return false }
+        if bundleIdentifier == "com.apple.notificationcenterui" { return false }
+        if appName == "Notification Center" || appName == "通知中心" { return false }
+
+        return true
     }
 
     private func makeFilter(

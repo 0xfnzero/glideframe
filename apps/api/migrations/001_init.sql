@@ -13,14 +13,6 @@ CREATE TABLE IF NOT EXISTS magic_links (
   consumed_at timestamptz
 );
 
-CREATE TABLE IF NOT EXISTS entitlements (
-  user_id uuid PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-  plan text NOT NULL CHECK (plan IN ('free', 'pro')),
-  status text NOT NULL CHECK (status IN ('active', 'trialing', 'past_due', 'canceled')),
-  expires_at timestamptz,
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-
 CREATE TABLE IF NOT EXISTS uploads (
   id uuid PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -73,11 +65,6 @@ CREATE TABLE IF NOT EXISTS ai_jobs (
   updated_at timestamptz NOT NULL
 );
 CREATE INDEX IF NOT EXISTS ai_jobs_user_created_idx ON ai_jobs(user_id, created_at);
-
-CREATE TABLE IF NOT EXISTS processed_webhooks (
-  id text PRIMARY KEY,
-  processed_at timestamptz NOT NULL DEFAULT now()
-);
 
 CREATE TABLE IF NOT EXISTS schema_migrations (
   version text PRIMARY KEY,

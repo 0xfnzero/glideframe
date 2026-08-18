@@ -22,6 +22,10 @@
 "microphone" = "Microphone";
 "camera" = "Camera";
 "countdown" = "Countdown";
+"preparing_recording" = "Preparing recording...";
+"recording_countdown" = "Recording starts in %d";
+"recording_in_progress" = "Recording in progress";
+"finalizing_recording" = "Saving recording...";
 "start_recording" = "Start Recording";
 "pause" = "Pause";
 "resume" = "Resume";

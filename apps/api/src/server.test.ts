@@ -1,4 +1,4 @@
-import { createHmac, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -8,7 +8,7 @@ import { MemoryStore } from "./memory-store.js";
 import { LocalObjectStore } from "./object-store.js";
 import { createServer } from "./server.js";
 
-describe("commercial API flow", () => {
+describe("community API flow", () => {
   let root: string;
   let store: MemoryStore;
   let app: Awaited<ReturnType<typeof createServer>>;
@@ -16,7 +16,7 @@ describe("commercial API flow", () => {
     NODE_ENV: "test", HOST: "127.0.0.1", PORT: 4100,
     PUBLIC_API_URL: "http://127.0.0.1:4100", WEB_URL: "http://127.0.0.1:3000",
     JWT_SECRET: "test-secret-with-at-least-32-characters", STORAGE_DRIVER: "local",
-    STORAGE_ROOT: ".data/test", S3_REGION: "us-east-1", PADDLE_WEBHOOK_SECRET: "paddle-test-secret", PADDLE_ENV: "sandbox"
+    STORAGE_ROOT: ".data/test", S3_REGION: "us-east-1"
   };
 
   beforeEach(async () => {
@@ -32,7 +32,7 @@ describe("commercial API flow", () => {
     const auth = { authorization: `Bearer ${accessToken}` };
     const entitlement = await app.inject({ method: "GET", url: "/v1/entitlements", headers: auth });
     expect(entitlement.statusCode).toBe(200);
-    expect(entitlement.json().plan).toBe("free");
+    expect(entitlement.json().plan).toBe("community");
 
     const created = await app.inject({
       method: "POST", url: "/v1/uploads", headers: auth,
@@ -70,8 +70,8 @@ describe("commercial API flow", () => {
     expect(analytics.json()).toEqual({ views: 1, uniqueViewers: 1, completionRate: 1 });
   });
 
-  it("enforces password, AI quota and idempotent signed billing webhooks", async () => {
-    const { accessToken, userId } = await authenticate("pro@example.com");
+  it("enforces password protection and community AI quota", async () => {
+    const { accessToken } = await authenticate("creator@example.com");
     const auth = { authorization: `Bearer ${accessToken}` };
     const uploadId = await completedUpload(auth);
     const shared = await app.inject({ method: "POST", url: "/v1/shares", headers: auth, payload: { uploadId, title: "Private demo", password: "correct-horse" } });
@@ -85,17 +85,6 @@ describe("commercial API flow", () => {
 
     const deniedJob = await app.inject({ method: "POST", url: "/v1/ai-jobs", headers: auth, payload: { uploadId, operation: "transcribe", sourceLanguage: "auto", mediaMinutes: 4 } });
     expect(deniedJob.statusCode).toBe(402);
-
-    const event = { event_id: "evt_test_1", event_type: "subscription.updated", data: { status: "active", next_billed_at: new Date(Date.now() + 86_400_000).toISOString(), custom_data: { user_id: userId } } };
-    const body = JSON.stringify(event);
-    const timestamp = Math.floor(Date.now() / 1000);
-    const signature = createHmac("sha256", config.PADDLE_WEBHOOK_SECRET!).update(`${timestamp}:${body}`).digest("hex");
-    const webhook = await app.inject({ method: "POST", url: "/v1/billing/paddle/webhook", headers: { "paddle-signature": `ts=${timestamp};h1=${signature}`, "content-type": "application/json" }, payload: body });
-    expect(webhook.statusCode).toBe(204);
-    const duplicate = await app.inject({ method: "POST", url: "/v1/billing/paddle/webhook", headers: { "paddle-signature": `ts=${timestamp};h1=${signature}`, "content-type": "application/json" }, payload: body });
-    expect(duplicate.statusCode).toBe(204);
-    const acceptedJob = await app.inject({ method: "POST", url: "/v1/ai-jobs", headers: auth, payload: { uploadId, operation: "transcribe", sourceLanguage: "auto", mediaMinutes: 4 } });
-    expect(acceptedJob.statusCode).toBe(202);
   });
 
   async function authenticate(email: string): Promise<{ accessToken: string; userId: string }> {

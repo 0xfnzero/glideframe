@@ -1,4 +1,4 @@
-import type { AnalyticsEventInput, CreateAiJob, Entitlement, Plan } from "@glideframe/contracts";
+import type { AnalyticsEventInput, CreateAiJob, Entitlement } from "@glideframe/contracts";
 
 export type User = { id: string; email: string; createdAt: string };
 export type Upload = {
@@ -38,7 +38,6 @@ export interface Store {
   createMagicLink(email: string, tokenHash: string, expiresAt: string): Promise<void>;
   consumeMagicLink(tokenHash: string, now: string): Promise<User | null>;
   getEntitlement(userId: string): Promise<Entitlement>;
-  setPlan(userId: string, plan: Plan, status: Entitlement["status"], expiresAt: string | null): Promise<void>;
   createUpload(upload: Upload): Promise<void>;
   getUpload(id: string): Promise<Upload | null>;
   completeUpload(id: string): Promise<void>;
@@ -52,5 +51,4 @@ export interface Store {
   createAiJob(job: AiJob): Promise<void>;
   getAiJob(id: string): Promise<AiJob | null>;
   updateAiJob(id: string, patch: Partial<AiJob>): Promise<void>;
-  markWebhookProcessed(id: string): Promise<boolean>;
 }
