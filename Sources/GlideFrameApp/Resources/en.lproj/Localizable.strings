@@ -1,4 +1,7 @@
 "app_name" = "GlideFrame";
+"language" = "Language";
+"language_english" = "English";
+"language_simplified_chinese" = "Simplified Chinese";
 "projects" = "Projects";
 "new_recording" = "New Recording";
 "recording" = "Recording";

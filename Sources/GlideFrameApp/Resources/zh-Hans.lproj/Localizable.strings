@@ -1,4 +1,7 @@
 "app_name" = "GlideFrame";
+"language" = "语言";
+"language_english" = "English";
+"language_simplified_chinese" = "简体中文";
 "projects" = "项目";
 "new_recording" = "新建录制";
 "recording" = "录制";

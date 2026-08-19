@@ -2,6 +2,7 @@
 .build/
 .swiftpm/
 DerivedData/
+DerivedDataRelease/
 GlideFrame.xcodeproj/xcuserdata/
 GlideFrame.xcodeproj/project.xcworkspace/xcuserdata/
 node_modules/

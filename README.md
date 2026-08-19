@@ -86,7 +86,7 @@ Run the macOS app as a real `.app` bundle:
 make mac
 ```
 
-Run the API and web workspace:
+Run the API and web workspace. This does not launch the desktop app:
 
 ```bash
 make start
@@ -104,7 +104,10 @@ http://127.0.0.1:3000
 | --- | --- |
 | `make` | Print all available commands |
 | `make mac` | Build and open the signed macOS app bundle |
+| `make mac-build` | Build the macOS Debug app bundle without opening it |
 | `make mac-swift` | Run the SwiftPM executable without an app bundle |
+| `make mac-release` | Build the macOS Release app bundle |
+| `make mac-dmg` | Build the macOS Release app bundle and package a DMG |
 | `make start` | Start API and web dev servers |
 | `make api` | Start only the API server |
 | `make web` | Start only the web app |
@@ -116,7 +119,7 @@ http://127.0.0.1:3000
 
 ## macOS App Development
 
-For permission-aware screen recording, run the generated Xcode project or use:
+For permission-aware screen recording, run the checked-in Xcode project or use:
 
 ```bash
 make mac
@@ -124,15 +127,47 @@ make mac
 
 Screen recording, microphone, and camera permissions are tied to the app bundle identity. `swift run` is useful for quick debugging, but it does not behave like a normal macOS app bundle in Dock, signing, and permission flows.
 
-If the project needs to be regenerated:
+To build without opening the app:
 
 ```bash
-brew install xcodegen
-xcodegen generate
+make mac-build
+```
+
+To open the project in Xcode:
+
+```bash
 open GlideFrame.xcodeproj
 ```
 
 Before running from Xcode, open Xcode Settings, add an Apple ID, then select a development team under the GlideFrame target's Signing & Capabilities tab.
+
+## macOS Packaging
+
+Build a Release `.app` bundle:
+
+```bash
+make mac-release
+```
+
+Create a downloadable DMG:
+
+```bash
+make mac-dmg
+```
+
+The default output path is:
+
+```text
+dist/release/GlideFrame-v<version>-macOS-<arch>.dmg
+```
+
+`make mac-dmg` refuses to overwrite an existing DMG. To choose a different output path:
+
+```bash
+make mac-dmg DMG=dist/release/GlideFrame-custom.dmg
+```
+
+For a local end-to-end check before a GitHub Release, run `make mac-dmg`, install the generated DMG, and confirm the app opens with the expected icon, language menu, and permissions prompts.
 
 ## Prototype Cloud Development
 

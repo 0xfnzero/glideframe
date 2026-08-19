@@ -86,7 +86,7 @@ make
 make mac
 ```
 
-启动 API 和 Web 工作区：
+启动 API 和 Web 工作区。这个命令不会启动桌面端：
 
 ```bash
 make start
@@ -104,7 +104,10 @@ http://127.0.0.1:3000
 | --- | --- |
 | `make` | 输出所有可用命令 |
 | `make mac` | 构建并打开 macOS 应用包 |
+| `make mac-build` | 构建 macOS Debug 应用包但不打开 |
 | `make mac-swift` | 不通过应用包，直接运行 SwiftPM 可执行文件 |
+| `make mac-release` | 构建 macOS Release 应用包 |
+| `make mac-dmg` | 构建 macOS Release 应用包并打包 DMG |
 | `make start` | 启动 API 和 Web 开发服务 |
 | `make api` | 只启动 API 服务 |
 | `make web` | 只启动 Web 应用 |
@@ -116,7 +119,7 @@ http://127.0.0.1:3000
 
 ## macOS 应用开发
 
-如果要测试录屏权限相关流程，请使用 Xcode 项目或运行：
+如果要测试录屏权限相关流程，请使用仓库中的 Xcode 项目或运行：
 
 ```bash
 make mac
@@ -124,15 +127,47 @@ make mac
 
 录屏、麦克风和摄像头权限会绑定到应用包身份。`swift run` 适合快速调试，但它在 Dock、签名和权限流程上不会像正常 macOS 应用包一样工作。
 
-如果需要重新生成 Xcode 项目：
+只构建桌面端但不打开应用：
 
 ```bash
-brew install xcodegen
-xcodegen generate
+make mac-build
+```
+
+打开 Xcode 项目：
+
+```bash
 open GlideFrame.xcodeproj
 ```
 
 在 Xcode 中运行前，请打开 Xcode Settings，添加 Apple ID，然后在 GlideFrame target 的 Signing & Capabilities 里选择开发团队。
+
+## macOS 打包
+
+构建 Release `.app` 应用包：
+
+```bash
+make mac-release
+```
+
+创建可下载的 DMG：
+
+```bash
+make mac-dmg
+```
+
+默认输出路径是：
+
+```text
+dist/release/GlideFrame-v<version>-macOS-<arch>.dmg
+```
+
+`make mac-dmg` 不会覆盖已经存在的 DMG。如果要指定另一个输出路径：
+
+```bash
+make mac-dmg DMG=dist/release/GlideFrame-custom.dmg
+```
+
+在发布到 GitHub Release 前，建议先运行 `make mac-dmg`，安装生成的 DMG，并确认应用可以打开，图标、语言菜单和权限弹窗都符合预期。
 
 ## 云端原型开发
 

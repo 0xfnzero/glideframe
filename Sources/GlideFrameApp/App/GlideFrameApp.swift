@@ -25,7 +25,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 struct GlideFrameApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var model = AppModel()
-    @AppStorage("app.language") private var language = "system"
+    @AppStorage("app.language") private var language = AppLanguage.english.rawValue
 
     var body: some Scene {
         WindowGroup {
@@ -55,6 +55,6 @@ struct GlideFrameApp: App {
     }
 
     private var selectedLocale: Locale {
-        language == "system" ? .current : Locale(identifier: language)
+        AppLanguage.normalized(language).locale
     }
 }

@@ -135,6 +135,7 @@ private struct ProjectRow: View {
 
 private struct StudioToolbar: View {
     @EnvironmentObject private var model: AppModel
+    @AppStorage("app.language") private var language = AppLanguage.english.rawValue
 
     var body: some View {
         HStack(spacing: 10) {
@@ -169,11 +170,32 @@ private struct StudioToolbar: View {
                 Label(tr("convert"), systemImage: "arrow.triangle.2.circlepath")
             }
             .buttonStyle(.bordered)
+
+            Menu {
+                ForEach(AppLanguage.allCases) { appLanguage in
+                    Button {
+                        language = appLanguage.rawValue
+                    } label: {
+                        Label(
+                            tr(appLanguage.displayNameKey),
+                            systemImage: currentLanguage == appLanguage ? "checkmark" : "circle"
+                        )
+                    }
+                }
+            } label: {
+                Image(systemName: "globe")
+            }
+            .menuStyle(.borderlessButton)
+            .help(tr("language"))
         }
         .padding(.horizontal, 16)
         .frame(height: 54)
         .background(.bar)
         .overlay(alignment: .bottom) { Divider() }
+    }
+
+    private var currentLanguage: AppLanguage {
+        AppLanguage.normalized(language)
     }
 }
 

@@ -14,6 +14,7 @@
 		23742F7F3BE83B86661D20DD /* RecordingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7CEE49E063482D39C6D40 /* RecordingEngine.swift */; };
 		441B5EA56BBE21AE90C983B0 /* GlideFrameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */; };
 		4561234595B6D2E7B174F613 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 68CEF1939AAB2DD1CBAFE04D /* Localizable.strings */; };
+		4F127C3B13A1455996F3EA77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D8FCF1D3D6E4732965B2586 /* Assets.xcassets */; };
 		55575ABF5E6E32BE4B5C1536 /* FormatConverterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28698DCE720BDA1393F4D6F1 /* FormatConverterModel.swift */; };
 		556325F90C0D50DA437DBDBA /* RecordingSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E2CD47042705B870DC9F1 /* RecordingSetupView.swift */; };
 		5B6CA086CB89EBC7EEA2DAE4 /* GlideFrameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */; };
@@ -99,6 +100,7 @@
 		898E8AFA28D975E871FC49F5 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		9012C1B1BD4BC71A592FE820 /* GlideFrameKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GlideFrameKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		99246E8D31B0C60CA07F3CC0 /* CaptureRegionGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureRegionGeometry.swift; sourceTree = "<group>"; };
+		9D8FCF1D3D6E4732965B2586 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = macos/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		BAEA3FA50FA07947ABC5761E /* CaptureModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureModels.swift; sourceTree = "<group>"; };
 		BB5E589A5399E13CC4B5088F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C9E6176FBDAE7780AD68ADC0 /* ScreenRegionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRegionSelector.swift; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 		82DD38BD3A8F5A750D1281BB = {
 			isa = PBXGroup;
 			children = (
+				9D8FCF1D3D6E4732965B2586 /* Assets.xcassets */,
 				A4218E6E6EA0829196CD456A /* GlideFrameApp */,
 				FEAF012BF63B8B0FE375B32A /* GlideFrameKit */,
 				42F105DEC73B5EFDF1647B04 /* GlideFrameKitTests */,
@@ -348,6 +351,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F127C3B13A1455996F3EA77 /* Assets.xcassets in Resources */,
 				4561234595B6D2E7B174F613 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
