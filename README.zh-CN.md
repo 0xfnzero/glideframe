@@ -1,10 +1,31 @@
-# GlideFrame
+<div align="center">
+  <h1>🎬 GlideFrame</h1>
+  <h3><em>本地优先的 macOS 录屏与演示视频工具</em></h3>
+</div>
 
-本地优先的 macOS 录屏与演示视频工具，用于产品演示和教程制作。
+<p align="center">
+  <strong>原生 macOS 录屏与编辑应用，通过开放项目格式，让屏幕录制更可信、更容易在本地编辑和导出，适合制作精美的产品演示和教程。</strong>
+</p>
 
-[English](README.md) | [中文](README.zh-CN.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
+<p align="center">
+  <a href="https://github.com/0xfnzero/glideframe/releases"><img src="https://img.shields.io/github/v/release/0xfnzero/glideframe" alt="Release"></a>
+  <a href="https://github.com/0xfnzero/glideframe/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="https://github.com/0xfnzero/glideframe"><img src="https://img.shields.io/github/stars/0xfnzero/glideframe?style=social" alt="GitHub stars"></a>
+  <a href="https://github.com/0xfnzero/glideframe/network"><img src="https://img.shields.io/github/forks/0xfnzero/glideframe?style=social" alt="GitHub forks"></a>
+</p>
 
-GlideFrame 是原生 macOS 录屏与编辑应用。目标是通过开放项目格式，让屏幕录制更可信、更容易本地编辑和导出。
+<p align="center">
+  <img src="https://img.shields.io/badge/Swift-FA7343?style=for-the-badge&amp;logo=swift&amp;logoColor=white" alt="Swift">
+  <img src="https://img.shields.io/badge/macOS%2014%2B-000000?style=for-the-badge&amp;logo=apple&amp;logoColor=white" alt="macOS 14+">
+  <img src="https://img.shields.io/badge/FFmpeg-007808?style=for-the-badge&amp;logo=ffmpeg&amp;logoColor=white" alt="FFmpeg">
+</p>
+
+<p align="center">
+  <a href="https://github.com/0xfnzero/glideframe/blob/main/README.md">English</a> |
+  <a href="https://github.com/0xfnzero/glideframe/blob/main/README.zh-CN.md">中文</a> |
+  <a href="https://discord.gg/2YzakxfyaC">Discord</a> |
+  <a href="https://t.me/open_fnzero">Telegram</a>
+</p>
 
 本仓库聚焦本地录屏器、编辑器、项目格式、共享协议和开发文档。
 

@@ -1,10 +1,31 @@
-# GlideFrame
+<div align="center">
+  <h1>🎬 GlideFrame</h1>
+  <h3><em>Local-first macOS screen recorder for polished product demos and tutorials</em></h3>
+</div>
 
-Local-first macOS screen recorder for polished product demos and tutorials.
+<p align="center">
+  <strong>A native macOS recording and editing app that makes screen recordings easy to trust, edit, and export locally through an open project format.</strong>
+</p>
 
-[English](README.md) | [中文](README.zh-CN.md) | [Discord](https://discord.gg/2YzakxfyaC) | [Telegram](https://t.me/open_fnzero)
+<p align="center">
+  <a href="https://github.com/0xfnzero/glideframe/releases"><img src="https://img.shields.io/github/v/release/0xfnzero/glideframe" alt="Release"></a>
+  <a href="https://github.com/0xfnzero/glideframe/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="https://github.com/0xfnzero/glideframe"><img src="https://img.shields.io/github/stars/0xfnzero/glideframe?style=social" alt="GitHub stars"></a>
+  <a href="https://github.com/0xfnzero/glideframe/network"><img src="https://img.shields.io/github/forks/0xfnzero/glideframe?style=social" alt="GitHub forks"></a>
+</p>
 
-GlideFrame is a native macOS recording and editing app. The goal is to make screen recordings easy to trust, edit, and export locally through an open project format.
+<p align="center">
+  <img src="https://img.shields.io/badge/Swift-FA7343?style=for-the-badge&amp;logo=swift&amp;logoColor=white" alt="Swift">
+  <img src="https://img.shields.io/badge/macOS%2014%2B-000000?style=for-the-badge&amp;logo=apple&amp;logoColor=white" alt="macOS 14+">
+  <img src="https://img.shields.io/badge/FFmpeg-007808?style=for-the-badge&amp;logo=ffmpeg&amp;logoColor=white" alt="FFmpeg">
+</p>
+
+<p align="center">
+  <a href="https://github.com/0xfnzero/glideframe/blob/main/README.md">English</a> |
+  <a href="https://github.com/0xfnzero/glideframe/blob/main/README.zh-CN.md">中文</a> |
+  <a href="https://discord.gg/2YzakxfyaC">Discord</a> |
+  <a href="https://t.me/open_fnzero">Telegram</a>
+</p>
 
 This repository focuses on the local recorder, editor, project format, shared contracts, and developer documentation.
 
