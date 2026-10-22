@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/0xfnzero/glideframe/releases"><img src="https://img.shields.io/github/v/release/0xfnzero/glideframe" alt="Release"></a>
-  <a href="https://github.com/0xfnzero/glideframe/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="https://github.com/0xfnzero/glideframe/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/license-multiple-blue.svg" alt="License"></a>
   <a href="https://github.com/0xfnzero/glideframe"><img src="https://img.shields.io/github/stars/0xfnzero/glideframe?style=social" alt="GitHub stars"></a>
   <a href="https://github.com/0xfnzero/glideframe/network"><img src="https://img.shields.io/github/forks/0xfnzero/glideframe?style=social" alt="GitHub forks"></a>
 </p>
@@ -21,10 +21,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/0xfnzero/glideframe/blob/main/README.md">English</a> |
-  <a href="https://github.com/0xfnzero/glideframe/blob/main/README.zh-CN.md">中文</a> |
-  <a href="https://discord.gg/2YzakxfyaC">Discord</a> |
-  <a href="https://t.me/open_fnzero">Telegram</a>
+    <a href="https://github.com/0xfnzero/glideframe/blob/main/README.zh-CN.md">中文</a> |
+    <a href="https://github.com/0xfnzero/glideframe/blob/main/README.md">English</a> |
+    <a href="https://fnzero.dev/">Website</a> |
+    <a href="https://t.me/open_fnzero">Telegram</a> |
+    <a href="https://discord.gg/2YzakxfyaC">Discord</a>
 </p>
 
 本仓库聚焦本地录屏器、编辑器、项目格式、共享协议和开发文档。
