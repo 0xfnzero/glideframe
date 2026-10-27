@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 
 public struct ProjectSummary: Identifiable, Equatable, Sendable {
     public var id: UUID
@@ -15,12 +16,14 @@ public struct RecoveryJournal: Codable, Equatable, Sendable {
     public var state: State
     public var startedAt: Date
     public var sourcePaths: [String]
+    public var ownerProcessID: Int32?
 
-    public init(projectID: UUID, state: State, startedAt: Date, sourcePaths: [String]) {
+    public init(projectID: UUID, state: State, startedAt: Date, sourcePaths: [String], ownerProcessID: Int32? = nil) {
         self.projectID = projectID
         self.state = state
         self.startedAt = startedAt
         self.sourcePaths = sourcePaths
+        self.ownerProcessID = ownerProcessID
     }
 }
 
@@ -92,12 +95,12 @@ public actor ProjectRepository {
 
     public func listProjects() throws -> [ProjectSummary] {
         try ensureRoot()
-        return try fileManager.contentsOfDirectory(
-            at: rootURL,
-            includingPropertiesForKeys: nil,
-            options: [.skipsHiddenFiles]
-        )
-        .filter { $0.pathExtension == "svproject" }
+        var roots = [rootURL]
+        // Previous Tauri releases stored recordings beside Projects, grouped by day.
+        if rootURL == Self.defaultRootURL(fileManager: fileManager) {
+            roots = [rootURL.deletingLastPathComponent()]
+        }
+        return try roots.flatMap { try packageURLs(in: $0, depth: 2) }
         .compactMap { url in
             guard let manifest = try? load(at: url) else { return nil }
             return ProjectSummary(
@@ -129,6 +132,8 @@ public actor ProjectRepository {
             guard fileManager.fileExists(atPath: journalURL.path),
                   var journal = try? decoder.decode(RecoveryJournal.self, from: Data(contentsOf: journalURL))
             else { continue }
+            if let owner = journal.ownerProcessID, owner > 0,
+               kill(owner, 0) == 0 || errno == EPERM { continue }
             journal.state = .interrupted
             try encoder.encode(journal).write(to: journalURL, options: .atomic)
             recovered.append(project)
@@ -138,6 +143,17 @@ public actor ProjectRepository {
 
     private func ensureRoot() throws {
         try fileManager.createDirectory(at: rootURL, withIntermediateDirectories: true)
+    }
+
+    private func packageURLs(in directory: URL, depth: Int) throws -> [URL] {
+        guard depth >= 0 else { return [] }
+        return try fileManager.contentsOfDirectory(
+            at: directory, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles]
+        ).flatMap { url -> [URL] in
+            guard try url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory == true else { return [] }
+            if url.pathExtension == "svproject" { return [url] }
+            return try packageURLs(in: url, depth: depth - 1)
+        }
     }
 }
 
@@ -153,7 +169,28 @@ private extension JSONEncoder {
 private extension JSONDecoder {
     static var screenVedio: JSONDecoder {
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .custom { container in
+            let value = try container.singleValueContainer().decode(String.self)
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = formatter.date(from: value) { return date }
+            formatter.formatOptions = [.withInternetDateTime]
+            guard let date = formatter.date(from: value) else {
+                throw DecodingError.dataCorrupted(.init(codingPath: container.codingPath, debugDescription: "Invalid ISO 8601 date: \(value)"))
+            }
+            return date
+        }
+        decoder.keyDecodingStrategy = .custom { path in
+            let key = path.last!.stringValue
+            return ManifestKey(stringValue: ["sourceId": "sourceID", "projectId": "projectID"][key] ?? key)!
+        }
         return decoder
     }
+}
+
+private struct ManifestKey: CodingKey {
+    var stringValue: String
+    var intValue: Int? { nil }
+    init?(stringValue: String) { self.stringValue = stringValue }
+    init?(intValue: Int) { return nil }
 }

@@ -12,10 +12,23 @@ targets:
     type: framework
     platform: macOS
     sources:
-      - Sources/GlideFrameKit
+      - path: Sources/GlideFrameKit
+        excludes: ["Capture"]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.glideframe.kit
+        DEFINES_MODULE: YES
+        GENERATE_INFOPLIST_FILE: YES
+  GlideFrameCapture:
+    type: framework
+    platform: macOS
+    sources:
+      - Sources/GlideFrameKit/Capture
+    dependencies:
+      - target: GlideFrameKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.glideframe.capture
         DEFINES_MODULE: YES
         GENERATE_INFOPLIST_FILE: YES
   GlideFrame:
@@ -25,6 +38,7 @@ targets:
       - Sources/GlideFrameApp
     dependencies:
       - target: GlideFrameKit
+      - target: GlideFrameCapture
     info:
       path: macos/Info.plist
       properties:

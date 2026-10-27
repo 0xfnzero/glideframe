@@ -1,0 +1,100 @@
+name: Desktop builds and recording
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  macos:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - run: brew install xcodegen ffmpeg
+      - run: npm ci
+      - run: npm run typecheck && npm run build && npm test
+      - run: swift test
+      - run: cargo test --locked --manifest-path crates/glideframe-recorder/Cargo.toml
+      - name: Build native macOS application
+        run: |
+          xcodegen generate
+          xcodebuild -project GlideFrame.xcodeproj -scheme GlideFrame -configuration Release -derivedDataPath DerivedDataRelease CODE_SIGNING_ALLOWED=NO build
+          APPLE_SIGNING_IDENTITY=- bash scripts/sign-macos-app.sh DerivedDataRelease/Build/Products/Release/GlideFrame.app
+          ditto -c -k --keepParent DerivedDataRelease/Build/Products/Release/GlideFrame.app GlideFrame-native-macOS.zip
+      - name: Build Tauri macOS application
+        env:
+          APPLE_SIGNING_IDENTITY: '-'
+        run: npm run tauri:build -w @glideframe/desktop -- --bundles app
+      - run: ditto -c -k --keepParent 'apps/desktop/src-tauri/target/release/bundle/macos/GlideFrame Desktop.app' GlideFrame-Desktop-macOS.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macOS-applications
+          path: '*.zip'
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install FFmpeg and resolve real executables
+        shell: pwsh
+        run: |
+          choco install ffmpeg --no-progress -y
+          $binary = Get-ChildItem "$env:ChocolateyInstall/lib/ffmpeg/tools" -Recurse -Filter ffmpeg.exe | Select-Object -First 1
+          if (!$binary) { throw 'Real FFmpeg executable not found' }
+          "GLIDEFRAME_FFMPEG_PATH=$($binary.FullName)" >> $env:GITHUB_ENV
+          $binary.DirectoryName >> $env:GITHUB_PATH
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+      - run: cargo test --locked --manifest-path crates/glideframe-recorder/Cargo.toml
+      - name: Build Windows application and installer
+        run: npm run tauri:build -w @glideframe/desktop
+      - name: Record, pause, resume, save and export with bundled tools
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem apps/desktop/src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1
+          if (!$installer) { throw 'NSIS installer not found' }
+          $appDir = Join-Path $env:RUNNER_TEMP GlideFrame-installed
+          # NSIS /D must be the final argument; this controlled path has no spaces.
+          $installation = Start-Process $installer.FullName -ArgumentList @('/S', "/D=$appDir") -PassThru -Wait
+          if ($installation.ExitCode -ne 0) { throw "Installer failed: $($installation.ExitCode)" }
+          foreach ($name in @('glideframe-desktop.exe', 'glideframe-ffmpeg.exe', 'glideframe-ffprobe.exe')) {
+            if (!(Test-Path (Join-Path $appDir $name))) { throw "Missing installed executable: $name" }
+          }
+          New-Item -ItemType Directory -Force smoke-evidence | Out-Null
+          $root = Join-Path $env:RUNNER_TEMP GlideFrame-smoke
+          $process = Start-Process "$appDir/glideframe-desktop.exe" -ArgumentList @('--smoke-recording', $root) -PassThru -RedirectStandardOutput smoke-evidence/result.json -RedirectStandardError smoke-evidence/stderr.log
+          if (!$process.WaitForExit(120000)) { $process.Kill(); throw 'Recording smoke test timed out' }
+          if ($process.ExitCode -ne 0) { Get-Content smoke-evidence/stderr.log; throw "Recording failed: $($process.ExitCode)" }
+          $videos = Get-ChildItem $root -Recurse -Filter *.mp4
+          if ($videos.Count -lt 2) { throw 'Expected source video and exported video' }
+          foreach ($video in $videos) {
+            $probe = & "$appDir/glideframe-ffprobe.exe" -v error -select_streams v:0 -count_frames -show_entries stream=width,height,nb_read_frames:format=duration -of json $video.FullName
+            if ($LASTEXITCODE -ne 0) { throw 'ffprobe failed' }
+            $info = $probe | ConvertFrom-Json
+            if ([double]$info.format.duration -lt 3 -or [int]$info.streams[0].nb_read_frames -lt 30) { throw 'Too few captured frames' }
+            $probe | Set-Content "smoke-evidence/$($video.BaseName)-probe.json"
+            & "$appDir/glideframe-ffmpeg.exe" -v error -i $video.FullName -f null -
+            if ($LASTEXITCODE -ne 0) { throw 'Video decoding failed' }
+          }
+          Copy-Item $root smoke-evidence/projects -Recurse
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Windows-installer-and-recording-evidence
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/nsis/*.exe
+            smoke-evidence

@@ -1,6 +1,7 @@
 import AppKit
 import Foundation
 import GlideFrameKit
+import GlideFrameCapture
 import UniformTypeIdentifiers
 
 @MainActor
@@ -17,7 +18,6 @@ final class AppModel: ObservableObject {
     @Published var captureTargetError: String?
     @Published var recordingStartError: String?
     @Published var notice: AppNotice?
-    @Published var recoveredProjectCount = 0
 
     let recordingEngine = RecordingEngine()
     let formatConverter = FormatConverterModel()
@@ -29,7 +29,7 @@ final class AppModel: ObservableObject {
 
     func bootstrap() async {
         do {
-            recoveredProjectCount = try await repository.recoverInterruptedProjects().count
+            _ = try await repository.recoverInterruptedProjects()
             try await reloadProjects()
         } catch {
             notice = .error(error.localizedDescription)
@@ -97,12 +97,12 @@ final class AppModel: ObservableObject {
             activeManifest = created.manifest
             activePackageURL = created.packageURL
             try await repository.writeRecoveryJournal(
-                .init(projectID: created.manifest.id, state: .preparing, startedAt: Date(), sourcePaths: ["Sources"]),
+                .init(projectID: created.manifest.id, state: .preparing, startedAt: Date(), sourcePaths: ["Sources"], ownerProcessID: ProcessInfo.processInfo.processIdentifier),
                 at: created.packageURL
             )
             try await recordingEngine.start(options: recordingOptions, packageURL: created.packageURL)
             try await repository.writeRecoveryJournal(
-                .init(projectID: created.manifest.id, state: .recording, startedAt: Date(), sourcePaths: ["Sources"]),
+                .init(projectID: created.manifest.id, state: .recording, startedAt: Date(), sourcePaths: ["Sources"], ownerProcessID: ProcessInfo.processInfo.processIdentifier),
                 at: created.packageURL
             )
             showsRecordingSetup = false
@@ -132,9 +132,10 @@ final class AppModel: ObservableObject {
             try await reloadProjects()
             selectedManifest = try await repository.load(at: packageURL)
             selectedPackageURL = packageURL
+            let videoURL = sourceURL() ?? packageURL
             notice = .success(
-                String(format: tr("recording_saved"), packageURL.path),
-                revealURL: packageURL
+                String(format: tr("recording_saved"), videoURL.path),
+                revealURL: videoURL
             )
         } catch {
             notice = .error(error.localizedDescription)
@@ -168,8 +169,7 @@ final class AppModel: ObservableObject {
         do {
             try? FileManager.default.removeItem(at: destination)
             try await exporter.export(manifest: manifest, packageURL: packageURL, destination: destination)
-            notice = .success(tr("export_complete"))
-            NSWorkspace.shared.activateFileViewerSelecting([destination])
+            notice = .success(String(format: tr("export_saved_at"), destination.path), revealURL: destination)
         } catch {
             notice = .error(error.localizedDescription)
         }
@@ -181,16 +181,18 @@ final class AppModel: ObservableObject {
     }
 
     func revealProjectsFolder() {
-        let url = (activePackageURL ?? selectedPackageURL)?.appending(
-            path: "Sources",
-            directoryHint: .isDirectory
-        ) ?? ProjectRepository.defaultRootURL()
+        let url = ProjectRepository.defaultRootURL()
         do {
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
             NSWorkspace.shared.open(url)
         } catch {
             notice = .error(error.localizedDescription)
         }
+    }
+
+    func revealRecording() {
+        guard let url = sourceURL() ?? selectedPackageURL else { return }
+        NSWorkspace.shared.activateFileViewerSelecting([url])
     }
 
     func sourceURL(kind: MediaSource.Kind = .screen) -> URL? {

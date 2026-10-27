@@ -11,7 +11,7 @@ APP_BUNDLE := $(XCODE_DERIVED_DATA)/Build/Products/Debug/GlideFrame.app
 RELEASE_APP_BUNDLE := $(XCODE_RELEASE_DERIVED_DATA)/Build/Products/Release/GlideFrame.app
 DMG := $(RELEASE_DIR)/GlideFrame-v$(APP_VERSION)-macOS-$(MAC_ARCH).dmg
 
-.PHONY: help install start dev api web mac mac-build mac-swift mac-release mac-dmg build test typecheck infra migrate
+.PHONY: help install start dev api web mac mac-build mac-swift mac-release mac-dmg desktop desktop-build desktop-package desktop-mac-app desktop-rust-test verify build test typecheck infra migrate
 
 help:
 	@echo "GlideFrame commands:"
@@ -23,6 +23,10 @@ help:
 	@echo "  make mac-swift    Run the SwiftPM executable without an app bundle"
 	@echo "  make mac-release  Build the macOS Release app bundle"
 	@echo "  make mac-dmg      Build the macOS Release app bundle and package a DMG"
+	@echo "  make desktop      Run Tauri in development mode (macOS/Windows)"
+	@echo "  make desktop-package Build the Tauri installer for the current OS"
+	@echo "  make desktop-mac-app Build and open the packaged macOS Tauri app"
+	@echo "  make verify       Run Swift, Rust, API and TypeScript checks"
 	@echo "  make build        Build web/API workspaces"
 	@echo "  make test         Run API and Swift tests"
 	@echo "  make typecheck    Type-check TypeScript workspaces"
@@ -54,13 +58,35 @@ mac: mac-build
 	open "$(APP_BUNDLE)"
 
 mac-build:
+	xcodegen generate
 	xcodebuild -project GlideFrame.xcodeproj -scheme GlideFrame -configuration Debug -derivedDataPath "$(XCODE_DERIVED_DATA)" build
+	bash scripts/sign-macos-app.sh "$(APP_BUNDLE)"
 
 mac-swift:
 	swift run --scratch-path $(SWIFT_SCRATCH_PATH) GlideFrame
 
 mac-release:
+	xcodegen generate
 	xcodebuild -project GlideFrame.xcodeproj -scheme GlideFrame -configuration Release -derivedDataPath "$(XCODE_RELEASE_DERIVED_DATA)" build
+	bash scripts/sign-macos-app.sh "$(RELEASE_APP_BUNDLE)"
+
+desktop: node_modules
+	npm run dev:desktop
+
+desktop-build: node_modules
+	npm run build -w @glideframe/desktop
+
+desktop-package: node_modules
+	npm run tauri:build -w @glideframe/desktop
+
+desktop-mac-app: node_modules
+	npm run tauri:build -w @glideframe/desktop -- --debug --bundles app
+	open "apps/desktop/src-tauri/target/debug/bundle/macos/GlideFrame Desktop.app"
+
+desktop-rust-test:
+	cargo test --manifest-path crates/glideframe-recorder/Cargo.toml
+
+verify: typecheck test desktop-rust-test
 
 mac-dmg: mac-release
 	@set -euo pipefail; \

@@ -1,0 +1,7 @@
+{
+  "bundle": {
+    "resources": {
+      "binaries/libGlideFrameCaptureBridge.dylib": "libGlideFrameCaptureBridge.dylib"
+    }
+  }
+}

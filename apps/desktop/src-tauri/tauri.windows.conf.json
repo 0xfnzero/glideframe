@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "externalBin": ["binaries/glideframe-ffmpeg", "binaries/glideframe-ffprobe"],
+    "targets": ["nsis"],
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" }
+    }
+  }
+}

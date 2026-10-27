@@ -7,14 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02A4F7625C7DB6FD9B4FD087 /* GlideFrameCapture.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C59079BCEBD913E164BF0D2A /* GlideFrameCapture.framework */; };
 		040025C39FD7FCB3AEB6E310 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5E589A5399E13CC4B5088F /* ContentView.swift */; };
 		0843CE01814B7E42C26242AB /* GlideFrameKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		1FB71E0E2594365D1EC87340 /* CaptureWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EC08132411136436FCA611 /* CaptureWriter.swift */; };
 		235BD7D137A6E4C61F921A3E /* ScreenRegionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E6176FBDAE7780AD68ADC0 /* ScreenRegionSelector.swift */; };
 		23742F7F3BE83B86661D20DD /* RecordingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC7CEE49E063482D39C6D40 /* RecordingEngine.swift */; };
+		260FEC775DA5B0E2AE228CFB /* CaptureTimelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002DA33D93748F7A6885A42 /* CaptureTimelineTests.swift */; };
+		40A57898442187993298EE58 /* CaptureWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37592E887AC707122EF988D5 /* CaptureWriter.swift */; };
 		441B5EA56BBE21AE90C983B0 /* GlideFrameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */; };
 		4561234595B6D2E7B174F613 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 68CEF1939AAB2DD1CBAFE04D /* Localizable.strings */; };
-		4F127C3B13A1455996F3EA77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D8FCF1D3D6E4732965B2586 /* Assets.xcassets */; };
 		55575ABF5E6E32BE4B5C1536 /* FormatConverterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28698DCE720BDA1393F4D6F1 /* FormatConverterModel.swift */; };
 		556325F90C0D50DA437DBDBA /* RecordingSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E2CD47042705B870DC9F1 /* RecordingSetupView.swift */; };
 		5B6CA086CB89EBC7EEA2DAE4 /* GlideFrameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */; };
@@ -23,23 +24,40 @@
 		681EC451FA0CC4BA04D1DED9 /* FFmpegConversionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D31D993BA42AE150E548CF /* FFmpegConversionService.swift */; };
 		6ED53A6C858E966D182FCD00 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8677FAE6FD973EE133FF3C16 /* Localization.swift */; };
 		7C10CA4D9933299890FDFF4F /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4105FD452706AE16B7D26696 /* AppModel.swift */; };
-		811194CC8F5AEEE26F9285BD /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01EB87DC02B8DF45993CFB11 /* ExportService.swift */; };
+		821AE31AE2B1E802F38491FB /* GlideFrameCapture.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C59079BCEBD913E164BF0D2A /* GlideFrameCapture.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		88B110FDF951E40909C822F7 /* CaptureRegionGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849283AB22C89EEC805AAA0C /* CaptureRegionGeometryTests.swift */; };
 		91FED33FAC11E9F9D796ADFE /* FormatConverterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1875E1BAE9D3B48FBC2994 /* FormatConverterView.swift */; };
 		A25C0D6E753F4BB6DBF22BD9 /* GlideFrameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E58BAD9BEF48B7226DC44319 /* GlideFrameApp.swift */; };
-		C8C5A1E6E25E52A3C6D48377 /* AuxiliaryRecorders.swift in Sources */ = {isa = PBXBuildFile; fileRef = D63CD84D0F46FCEFD661C2F2 /* AuxiliaryRecorders.swift */; };
+		AB47099B2F000C144928F81D /* AuxiliaryRecorders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BE1631672C5775081726044 /* AuxiliaryRecorders.swift */; };
 		CDFA9F800D715746AEAA9EDB /* ProjectRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6BA9DC1A1D9C006B39DF48 /* ProjectRepository.swift */; };
 		D29ACD5E1D7499EBEB3D7630 /* CaptureModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEA3FA50FA07947ABC5761E /* CaptureModels.swift */; };
 		D2D0E06564CE11B453A9A450 /* MediaConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1717F4FFB8A0ED6A8B8642 /* MediaConversion.swift */; };
 		DBA7CBC98DA635B6B635FB23 /* StudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197E8F521C869DB7E67BDA75 /* StudioView.swift */; };
+		E016F31D9A618803FD3F5DA1 /* GlideFrameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */; };
 		E37C143DABBD07EEFD946084 /* GlideFrameKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E4AABA9308E0B7C2F090161D /* CaptureRegionGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99246E8D31B0C60CA07F3CC0 /* CaptureRegionGeometry.swift */; };
 		E83CB406A078FD16305225C1 /* AutoPolish.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D2FE1D036CA4B561F9677F /* AutoPolish.swift */; };
+		EB985F6FE6989515E06C5567 /* CaptureTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F98592300937C6C3698349B /* CaptureTimeline.swift */; };
+		F745032A500C3DBD87E223F6 /* ExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24C7A56F7781147F32273D9 /* ExportService.swift */; };
 		FC42184063ABB07E1B22358C /* ProjectManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C52F60A36268B9CBE727948 /* ProjectManifest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0AE6484A89AECF3946AE6761 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A331780F1B2B445549EDED39 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A01AE0C99170AEE832C81068;
+			remoteInfo = GlideFrameCapture;
+		};
 		5FB46CF1101371F667955C90 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A331780F1B2B445549EDED39 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F423578F8E32D08C2AEE9D49;
+			remoteInfo = GlideFrameKit;
+		};
+		97683BBE4273285C80E9A1DF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A331780F1B2B445549EDED39 /* Project object */;
 			proxyType = 1;
@@ -63,6 +81,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				E37C143DABBD07EEFD946084 /* GlideFrameKit.framework in Embed Frameworks */,
+				821AE31AE2B1E802F38491FB /* GlideFrameCapture.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -81,16 +100,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		01EB87DC02B8DF45993CFB11 /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
 		197E8F521C869DB7E67BDA75 /* StudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudioView.swift; sourceTree = "<group>"; };
+		1BE1631672C5775081726044 /* AuxiliaryRecorders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuxiliaryRecorders.swift; sourceTree = "<group>"; };
 		1DC7CEE49E063482D39C6D40 /* RecordingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingEngine.swift; sourceTree = "<group>"; };
 		28698DCE720BDA1393F4D6F1 /* FormatConverterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatConverterModel.swift; sourceTree = "<group>"; };
 		29D2FE1D036CA4B561F9677F /* AutoPolish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoPolish.swift; sourceTree = "<group>"; };
+		37592E887AC707122EF988D5 /* CaptureWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureWriter.swift; sourceTree = "<group>"; };
 		3B8E2CD47042705B870DC9F1 /* RecordingSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingSetupView.swift; sourceTree = "<group>"; };
 		4105FD452706AE16B7D26696 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		4AE7564E1352657629722236 /* GlideFrame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GlideFrame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F98592300937C6C3698349B /* CaptureTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTimeline.swift; sourceTree = "<group>"; };
 		511D6A43D5F33040311F2C56 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		53EC08132411136436FCA611 /* CaptureWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureWriter.swift; sourceTree = "<group>"; };
 		6A1717F4FFB8A0ED6A8B8642 /* MediaConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaConversion.swift; sourceTree = "<group>"; };
 		75D31D993BA42AE150E548CF /* FFmpegConversionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FFmpegConversionService.swift; sourceTree = "<group>"; };
 		76FD5F9D972B9E265D086DDF /* ProjectModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModelTests.swift; sourceTree = "<group>"; };
@@ -100,19 +120,28 @@
 		898E8AFA28D975E871FC49F5 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		9012C1B1BD4BC71A592FE820 /* GlideFrameKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GlideFrameKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		99246E8D31B0C60CA07F3CC0 /* CaptureRegionGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureRegionGeometry.swift; sourceTree = "<group>"; };
-		9D8FCF1D3D6E4732965B2586 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = macos/Assets.xcassets; sourceTree = SOURCE_ROOT; };
 		BAEA3FA50FA07947ABC5761E /* CaptureModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureModels.swift; sourceTree = "<group>"; };
 		BB5E589A5399E13CC4B5088F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C59079BCEBD913E164BF0D2A /* GlideFrameCapture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GlideFrameCapture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9E6176FBDAE7780AD68ADC0 /* ScreenRegionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenRegionSelector.swift; sourceTree = "<group>"; };
-		D63CD84D0F46FCEFD661C2F2 /* AuxiliaryRecorders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuxiliaryRecorders.swift; sourceTree = "<group>"; };
+		E24C7A56F7781147F32273D9 /* ExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportService.swift; sourceTree = "<group>"; };
 		E58BAD9BEF48B7226DC44319 /* GlideFrameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlideFrameApp.swift; sourceTree = "<group>"; };
 		EE3078F67CA25243D5342EB1 /* MediaConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaConversionTests.swift; sourceTree = "<group>"; };
 		EF1875E1BAE9D3B48FBC2994 /* FormatConverterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatConverterView.swift; sourceTree = "<group>"; };
+		F002DA33D93748F7A6885A42 /* CaptureTimelineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTimelineTests.swift; sourceTree = "<group>"; };
 		FC6BA9DC1A1D9C006B39DF48 /* ProjectRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectRepository.swift; sourceTree = "<group>"; };
 		FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GlideFrameKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		547A637E5FAE2EF26A0DFD4F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E016F31D9A618803FD3F5DA1 /* GlideFrameKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5C501EA6155100B732D54971 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -126,6 +155,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5B6CA086CB89EBC7EEA2DAE4 /* GlideFrameKit.framework in Frameworks */,
+				02A4F7625C7DB6FD9B4FD087 /* GlideFrameCapture.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,18 +181,22 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		25D6B656900DC233C3BD7030 /* Export */ = {
+		1A17D9D68C7EB66C41CE255E /* Capture */ = {
 			isa = PBXGroup;
 			children = (
-				01EB87DC02B8DF45993CFB11 /* ExportService.swift */,
+				1BE1631672C5775081726044 /* AuxiliaryRecorders.swift */,
+				37592E887AC707122EF988D5 /* CaptureWriter.swift */,
+				E24C7A56F7781147F32273D9 /* ExportService.swift */,
 			);
-			path = Export;
+			name = Capture;
+			path = Sources/GlideFrameKit/Capture;
 			sourceTree = "<group>";
 		};
 		42F105DEC73B5EFDF1647B04 /* GlideFrameKitTests */ = {
 			isa = PBXGroup;
 			children = (
 				849283AB22C89EEC805AAA0C /* CaptureRegionGeometryTests.swift */,
+				F002DA33D93748F7A6885A42 /* CaptureTimelineTests.swift */,
 				EE3078F67CA25243D5342EB1 /* MediaConversionTests.swift */,
 				76FD5F9D972B9E265D086DDF /* ProjectModelTests.swift */,
 			);
@@ -190,7 +224,7 @@
 		82DD38BD3A8F5A750D1281BB = {
 			isa = PBXGroup;
 			children = (
-				9D8FCF1D3D6E4732965B2586 /* Assets.xcassets */,
+				1A17D9D68C7EB66C41CE255E /* Capture */,
 				A4218E6E6EA0829196CD456A /* GlideFrameApp */,
 				FEAF012BF63B8B0FE375B32A /* GlideFrameKit */,
 				42F105DEC73B5EFDF1647B04 /* GlideFrameKitTests */,
@@ -203,7 +237,6 @@
 			children = (
 				140449633B5993B969E030D6 /* App */,
 				4DAEECA8ECB673B8040E9FDB /* Conversion */,
-				25D6B656900DC233C3BD7030 /* Export */,
 				AE68F93A5EED6F2CB6EC981A /* Recording */,
 				0C53EDF3B184878AD059FEC1 /* Resources */,
 				72F2F624573A521A2ABE4243 /* Studio */,
@@ -215,9 +248,7 @@
 		AE68F93A5EED6F2CB6EC981A /* Recording */ = {
 			isa = PBXGroup;
 			children = (
-				D63CD84D0F46FCEFD661C2F2 /* AuxiliaryRecorders.swift */,
 				BAEA3FA50FA07947ABC5761E /* CaptureModels.swift */,
-				53EC08132411136436FCA611 /* CaptureWriter.swift */,
 				1DC7CEE49E063482D39C6D40 /* RecordingEngine.swift */,
 				3B8E2CD47042705B870DC9F1 /* RecordingSetupView.swift */,
 				C9E6176FBDAE7780AD68ADC0 /* ScreenRegionSelector.swift */,
@@ -229,6 +260,7 @@
 			isa = PBXGroup;
 			children = (
 				4AE7564E1352657629722236 /* GlideFrame.app */,
+				C59079BCEBD913E164BF0D2A /* GlideFrameCapture.framework */,
 				FCFEDF7D26617FD7DF3ACF9C /* GlideFrameKit.framework */,
 				9012C1B1BD4BC71A592FE820 /* GlideFrameKitTests.xctest */,
 			);
@@ -240,6 +272,7 @@
 			children = (
 				29D2FE1D036CA4B561F9677F /* AutoPolish.swift */,
 				99246E8D31B0C60CA07F3CC0 /* CaptureRegionGeometry.swift */,
+				4F98592300937C6C3698349B /* CaptureTimeline.swift */,
 				75D31D993BA42AE150E548CF /* FFmpegConversionService.swift */,
 				6A1717F4FFB8A0ED6A8B8642 /* MediaConversion.swift */,
 				7C52F60A36268B9CBE727948 /* ProjectManifest.swift */,
@@ -265,6 +298,7 @@
 			);
 			dependencies = (
 				3AF2E243BFC993728F58142F /* PBXTargetDependency */,
+				85E03A3BFF709A65AEF5B2A5 /* PBXTargetDependency */,
 			);
 			name = GlideFrame;
 			packageProductDependencies = (
@@ -272,6 +306,25 @@
 			productName = GlideFrame;
 			productReference = 4AE7564E1352657629722236 /* GlideFrame.app */;
 			productType = "com.apple.product-type.application";
+		};
+		A01AE0C99170AEE832C81068 /* GlideFrameCapture */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B36A3DF23CCA3180220F01E /* Build configuration list for PBXNativeTarget "GlideFrameCapture" */;
+			buildPhases = (
+				FEA807A359D267E4EDEE30C5 /* Sources */,
+				547A637E5FAE2EF26A0DFD4F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				04F69180F4317B23FD6C646A /* PBXTargetDependency */,
+			);
+			name = GlideFrameCapture;
+			packageProductDependencies = (
+			);
+			productName = GlideFrameCapture;
+			productReference = C59079BCEBD913E164BF0D2A /* GlideFrameCapture.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 		EA6C33B12D32E5C2B8F81D17 /* GlideFrameKitTests */ = {
 			isa = PBXNativeTarget;
@@ -340,6 +393,7 @@
 			projectRoot = "";
 			targets = (
 				F423578F8E32D08C2AEE9D49 /* GlideFrameKit */,
+				A01AE0C99170AEE832C81068 /* GlideFrameCapture */,
 				6881DD76883402268EE903D0 /* GlideFrame */,
 				EA6C33B12D32E5C2B8F81D17 /* GlideFrameKitTests */,
 			);
@@ -351,7 +405,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F127C3B13A1455996F3EA77 /* Assets.xcassets in Resources */,
 				4561234595B6D2E7B174F613 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,6 +418,7 @@
 			files = (
 				E83CB406A078FD16305225C1 /* AutoPolish.swift in Sources */,
 				E4AABA9308E0B7C2F090161D /* CaptureRegionGeometry.swift in Sources */,
+				EB985F6FE6989515E06C5567 /* CaptureTimeline.swift in Sources */,
 				681EC451FA0CC4BA04D1DED9 /* FFmpegConversionService.swift in Sources */,
 				D2D0E06564CE11B453A9A450 /* MediaConversion.swift in Sources */,
 				FC42184063ABB07E1B22358C /* ProjectManifest.swift in Sources */,
@@ -377,6 +431,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				88B110FDF951E40909C822F7 /* CaptureRegionGeometryTests.swift in Sources */,
+				260FEC775DA5B0E2AE228CFB /* CaptureTimelineTests.swift in Sources */,
 				644F536DE74892A8519891D5 /* MediaConversionTests.swift in Sources */,
 				6177315CA14B567070B29F4A /* ProjectModelTests.swift in Sources */,
 			);
@@ -387,11 +442,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C10CA4D9933299890FDFF4F /* AppModel.swift in Sources */,
-				C8C5A1E6E25E52A3C6D48377 /* AuxiliaryRecorders.swift in Sources */,
 				D29ACD5E1D7499EBEB3D7630 /* CaptureModels.swift in Sources */,
-				1FB71E0E2594365D1EC87340 /* CaptureWriter.swift in Sources */,
 				040025C39FD7FCB3AEB6E310 /* ContentView.swift in Sources */,
-				811194CC8F5AEEE26F9285BD /* ExportService.swift in Sources */,
 				55575ABF5E6E32BE4B5C1536 /* FormatConverterModel.swift in Sources */,
 				91FED33FAC11E9F9D796ADFE /* FormatConverterView.swift in Sources */,
 				A25C0D6E753F4BB6DBF22BD9 /* GlideFrameApp.swift in Sources */,
@@ -403,9 +455,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FEA807A359D267E4EDEE30C5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AB47099B2F000C144928F81D /* AuxiliaryRecorders.swift in Sources */,
+				40A57898442187993298EE58 /* CaptureWriter.swift in Sources */,
+				F745032A500C3DBD87E223F6 /* ExportService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		04F69180F4317B23FD6C646A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F423578F8E32D08C2AEE9D49 /* GlideFrameKit */;
+			targetProxy = 97683BBE4273285C80E9A1DF /* PBXContainerItemProxy */;
+		};
 		3AF2E243BFC993728F58142F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F423578F8E32D08C2AEE9D49 /* GlideFrameKit */;
@@ -415,6 +482,11 @@
 			isa = PBXTargetDependency;
 			target = F423578F8E32D08C2AEE9D49 /* GlideFrameKit */;
 			targetProxy = 5FB46CF1101371F667955C90 /* PBXContainerItemProxy */;
+		};
+		85E03A3BFF709A65AEF5B2A5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A01AE0C99170AEE832C81068 /* GlideFrameCapture */;
+			targetProxy = 0AE6484A89AECF3946AE6761 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -434,12 +506,10 @@
 		41736EAF03BFE2F084D5EB0D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = KLM6456T58;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -450,7 +520,6 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.glideframe.kit;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -464,7 +533,6 @@
 				CODE_SIGN_ENTITLEMENTS = macos/GlideFrame.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = KLM6456T58;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = macos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -477,6 +545,29 @@
 			};
 			name = Release;
 		};
+		6C3214D936279343BA1FF0D8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.glideframe.capture;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
 		82F957B28C3E7343114EECD9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -484,7 +575,6 @@
 				CODE_SIGN_ENTITLEMENTS = macos/GlideFrame.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = KLM6456T58;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = macos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -500,12 +590,10 @@
 		A74700CB5C091A220E817120 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = KLM6456T58;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -516,7 +604,6 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.glideframe.kit;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -644,6 +731,29 @@
 			};
 			name = Release;
 		};
+		CD68639C324615C469F74C5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.glideframe.capture;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
 		D49D0563D7FA272B2739916C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -691,6 +801,15 @@
 			buildConfigurations = (
 				A74700CB5C091A220E817120 /* Debug */,
 				41736EAF03BFE2F084D5EB0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7B36A3DF23CCA3180220F01E /* Build configuration list for PBXNativeTarget "GlideFrameCapture" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CD68639C324615C469F74C5B /* Debug */,
+				6C3214D936279343BA1FF0D8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -8,7 +8,7 @@ struct StudioView: View {
     var body: some View {
         HSplitView {
             VStack(spacing: 0) {
-                StudioPreview(url: model.sourceURL(), canvas: model.selectedManifest?.canvas ?? .default)
+                StudioPreview(url: model.sourceURL(), canvas: model.selectedManifest?.canvas ?? .default, sourceAspect: sourceAspect, range: model.selectedManifest?.editGraph.clips.first?.sourceRange)
                 Divider()
                 TimelineEditor()
                     .frame(height: 184)
@@ -17,24 +17,36 @@ struct StudioView: View {
                 .frame(minWidth: 260, idealWidth: 292, maxWidth: 330)
         }
     }
+
+    private var sourceAspect: CGFloat {
+        guard let source = model.selectedManifest?.sources.first(where: { $0.kind == .screen }),
+              let width = source.width, let height = source.height, height > 0 else { return 16 / 9 }
+        return CGFloat(width) / CGFloat(height)
+    }
 }
 
 private struct StudioPreview: View {
     let url: URL?
     let canvas: CanvasStyle
+    let sourceAspect: CGFloat
+    let range: MediaTimeRange?
 
     var body: some View {
         GeometryReader { proxy in
             let canvasSize = fittedCanvas(in: proxy.size, ratio: canvas.aspectRatio)
+            let previewScale = canvasSize.width / (canvas.aspectRatio == .landscape ? 1920 : 1080)
+            let inset = canvas.padding * previewScale
+            let available = CGSize(width: max(1, canvasSize.width - inset * 2), height: max(1, canvasSize.height - inset * 2))
+            let videoWidth = min(available.width, available.height * sourceAspect)
             ZStack {
                 Color(nsColor: .windowBackgroundColor)
                 ZStack {
                     CanvasBackground(background: canvas.background)
                     if let url {
-                        PlayerSurface(url: url)
-                            .clipShape(RoundedRectangle(cornerRadius: canvas.cornerRadius))
-                            .shadow(color: .black.opacity(canvas.shadow), radius: 20, y: 8)
-                            .padding(canvas.padding / 3)
+                        PlayerSurface(url: url, range: range)
+                            .frame(width: videoWidth, height: videoWidth / sourceAspect)
+                            .clipShape(RoundedRectangle(cornerRadius: canvas.cornerRadius * previewScale))
+                            .shadow(color: .black.opacity(canvas.shadow), radius: 20 * previewScale, y: 8 * previewScale)
                     }
                 }
                 .frame(width: canvasSize.width, height: canvasSize.height)
@@ -56,14 +68,16 @@ private struct StudioPreview: View {
 
 private struct PlayerSurface: View {
     let url: URL
+    let range: MediaTimeRange?
 
     var body: some View {
-        AppKitPlayerSurface(url: url)
+        AppKitPlayerSurface(url: url, range: range)
     }
 }
 
 private struct AppKitPlayerSurface: NSViewRepresentable {
     let url: URL
+    let range: MediaTimeRange?
 
     func makeCoordinator() -> Coordinator {
         Coordinator(url: url)
@@ -74,13 +88,26 @@ private struct AppKitPlayerSurface: NSViewRepresentable {
         view.controlsStyle = .inline
         view.videoGravity = .resizeAspect
         view.player = AVPlayer(url: url)
+        applyRange(to: view.player)
         return view
     }
 
     func updateNSView(_ view: AVPlayerView, context: Context) {
-        guard context.coordinator.url != url else { return }
-        context.coordinator.url = url
-        view.player?.replaceCurrentItem(with: AVPlayerItem(url: url))
+        if context.coordinator.url != url {
+            context.coordinator.url = url
+            view.player?.replaceCurrentItem(with: AVPlayerItem(url: url))
+        }
+        applyRange(to: view.player)
+    }
+
+    private func applyRange(to player: AVPlayer?) {
+        guard let player, let item = player.currentItem else { return }
+        let start = range?.start ?? 0
+        item.forwardPlaybackEndTime = range.map { CMTime(seconds: $0.end, preferredTimescale: 600) } ?? .invalid
+        item.reversePlaybackEndTime = CMTime(seconds: start, preferredTimescale: 600)
+        if player.currentTime().seconds < start || (range.map { player.currentTime().seconds >= $0.end } ?? false) {
+            player.seek(to: CMTime(seconds: start, preferredTimescale: 600))
+        }
     }
 
     static func dismantleNSView(_ view: AVPlayerView, coordinator: Coordinator) {
@@ -124,14 +151,14 @@ private struct TimelineEditor: View {
             HStack {
                 Text(tr("timeline")).font(.headline)
                 Spacer()
-                Text((model.selectedManifest?.duration ?? 0).durationLabel).monospacedDigit().foregroundStyle(.secondary)
+                Text((model.selectedManifest.map { ProjectTimeline.outputDuration(for: $0) } ?? 0).durationLabel).monospacedDigit().foregroundStyle(.secondary)
             }
             .padding(.horizontal, 14)
 
             ForEach(model.selectedManifest?.tracks ?? []) { track in
                 HStack(spacing: 10) {
                     Image(systemName: icon(for: track.kind)).frame(width: 18)
-                    Text(track.kind.rawValue.capitalized).frame(width: 86, alignment: .leading)
+                    Text(tr(track.kind == .screen ? "screen" : track.kind == .systemAudio ? "system_audio" : track.kind == .microphone ? "microphone" : "camera")).frame(width: 86, alignment: .leading)
                     RoundedRectangle(cornerRadius: 3)
                         .fill(track.kind == .screen ? Color.accentColor.opacity(0.72) : Color.green.opacity(0.55))
                         .frame(height: 24)
@@ -192,9 +219,6 @@ private struct InspectorView: View {
                 HStack {
                     Text(tr("style")).font(.headline)
                     Spacer()
-                    Button { model.revealProject() } label: { Image(systemName: "folder") }
-                        .buttonStyle(.borderless)
-                        .help(tr("reveal_project"))
                 }
                 InspectorSection(title: "background") {
                     HStack(spacing: 10) {
@@ -240,12 +264,6 @@ private struct InspectorView: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                LabeledContent(tr("zoom_events"), value: "\(model.selectedManifest?.editGraph.zoomKeyframes.count ?? 0)")
-                    .foregroundStyle(.secondary)
-                Toggle(tr("remove_silence"), isOn: Binding(
-                    get: { model.selectedManifest?.editGraph.removeSilence ?? false },
-                    set: { value in model.updateManifest { $0.editGraph.removeSilence = value } }
-                ))
             }
             .padding(16)
         }

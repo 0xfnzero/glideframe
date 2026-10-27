@@ -4,6 +4,7 @@ import CoreGraphics
 import Foundation
 @preconcurrency import ScreenCaptureKit
 import GlideFrameKit
+import GlideFrameCapture
 
 @MainActor
 final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
@@ -35,7 +36,14 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
     private var cameraURL: URL?
     private var videoURL: URL?
     private var startedAt: Date?
+    private var pausedAt: Date?
+    private var pausedDuration: TimeInterval = 0
     private var recordingSize = CGSize.zero
+
+    var elapsed: TimeInterval {
+        guard let startedAt else { return 0 }
+        return max(0, (pausedAt ?? Date()).timeIntervalSince(startedAt) - pausedDuration)
+    }
 
     func requestScreenCaptureAccess() {
         CGRequestScreenCaptureAccess()
@@ -182,6 +190,9 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
         guard case .recording = state else { return }
         writer?.pause()
         microphoneRecorder.pause()
+        pointerTracker.pause()
+        cameraRecorder.pause()
+        pausedAt = Date()
         state = .paused
     }
 
@@ -189,6 +200,10 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
         guard state == .paused else { return }
         writer?.resume()
         microphoneRecorder.resume()
+        pointerTracker.resume()
+        cameraRecorder.resume()
+        if let pausedAt { pausedDuration += Date().timeIntervalSince(pausedAt) }
+        pausedAt = nil
         state = .recording(startedAt: startedAt ?? Date())
     }
 
@@ -358,6 +373,8 @@ final class RecordingEngine: NSObject, ObservableObject, SCStreamDelegate {
         writer = nil
         previewImage = nil
         startedAt = nil
+        pausedAt = nil
+        pausedDuration = 0
         microphoneURL = nil
         cameraURL = nil
         videoURL = nil

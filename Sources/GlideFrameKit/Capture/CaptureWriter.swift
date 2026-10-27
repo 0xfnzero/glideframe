@@ -2,9 +2,10 @@
 @preconcurrency import CoreImage
 import CoreMedia
 import Foundation
+import GlideFrameKit
 @preconcurrency import ScreenCaptureKit
 
-final class CaptureWriter: NSObject, SCStreamOutput, @unchecked Sendable {
+public final class CaptureWriter: NSObject, SCStreamOutput, @unchecked Sendable {
     enum WriterError: LocalizedError {
         case cannotAddVideoInput
         case cannotAddAudioInput
@@ -26,15 +27,14 @@ final class CaptureWriter: NSObject, SCStreamOutput, @unchecked Sendable {
     private let audioInput: AVAssetWriterInput?
     private let lock = NSLock()
     private var sessionStart: CMTime?
-    private var lastSourcePTS: CMTime?
-    private var accumulatedPause = CMTime.zero
-    private var resumePending = false
-    private var paused = false
+    private var timeline: CaptureTimeline
     private var isFinishing = false
     private var writtenDuration = CMTime.zero
+    private var lastVideoPTS: CMTime?
+    private var lastAudioPTS: CMTime?
     private let previewProcessor: CapturePreviewProcessor?
 
-    init(
+    public init(
         url: URL,
         width: Int,
         height: Int,
@@ -42,8 +42,9 @@ final class CaptureWriter: NSObject, SCStreamOutput, @unchecked Sendable {
         includeAudio: Bool,
         previewHandler: (@Sendable (CGImage) -> Void)? = nil
     ) throws {
+        timeline = CaptureTimeline(frameRate: frameRate)
         previewProcessor = previewHandler.map(CapturePreviewProcessor.init(handler:))
-        writer = try AVAssetWriter(outputURL: url, fileType: .mov)
+        writer = try AVAssetWriter(outputURL: url, fileType: url.pathExtension.lowercased() == "mp4" ? .mp4 : .mov)
         let videoSettings: [String: Any] = [
             AVVideoCodecKey: AVVideoCodecType.h264,
             AVVideoWidthKey: width,
@@ -78,57 +79,64 @@ final class CaptureWriter: NSObject, SCStreamOutput, @unchecked Sendable {
         super.init()
     }
 
-    func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
+    public func stream(_ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of type: SCStreamOutputType) {
         guard sampleBuffer.isValid, CMSampleBufferDataIsReady(sampleBuffer) else { return }
-        if type == .screen { previewProcessor?.consume(sampleBuffer) }
+        if type == .screen {
+            // ScreenCaptureKit also delivers idle/blank status samples. They are
+            // valid CMSampleBuffers, but are not encodable video frames.
+            guard let attachments = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, createIfNecessary: false) as? [[SCStreamFrameInfo: Any]],
+                  let status = attachments.first?[.status] as? Int,
+                  status == SCFrameStatus.complete.rawValue,
+                  CMSampleBufferGetImageBuffer(sampleBuffer) != nil else { return }
+            previewProcessor?.consume(sampleBuffer)
+        }
         let sourcePTS = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
 
         lock.lock()
         defer { lock.unlock() }
-        guard !isFinishing else { return }
-        if paused {
-            lastSourcePTS = sourcePTS
-            return
-        }
-        if resumePending, let lastSourcePTS {
-            let gap = CMTimeSubtract(sourcePTS, lastSourcePTS)
-            if gap > .zero { accumulatedPause = CMTimeAdd(accumulatedPause, gap) }
-            resumePending = false
-        }
-        lastSourcePTS = sourcePTS
+        guard !isFinishing, writer.status != .failed else { return }
+        guard let shifted = timeline.presentationTime(for: sourcePTS, isVideo: type == .screen) else { return }
 
         if sessionStart == nil {
+            guard type == .screen else { return }
             guard writer.startWriting() else { return }
             writer.startSession(atSourceTime: .zero)
             sessionStart = sourcePTS
         }
-        guard let sessionStart else { return }
-        let shifted = CMTimeSubtract(CMTimeSubtract(sourcePTS, sessionStart), accumulatedPause)
-        if type == .screen { writtenDuration = max(writtenDuration, shifted) }
         guard let adjusted = sampleBuffer.retimed(to: shifted) else { return }
 
         switch type {
         case .screen where videoInput.isReadyForMoreMediaData:
-            videoInput.append(adjusted)
+            guard lastVideoPTS.map({ shifted > $0 }) ?? true else { return }
+            if videoInput.append(adjusted) {
+                lastVideoPTS = shifted
+                writtenDuration = max(writtenDuration, shifted)
+            } else {
+                NSLog("GlideFrame video encoder: %@", String(describing: writer.error))
+            }
         case .audio where audioInput?.isReadyForMoreMediaData == true:
-            audioInput?.append(adjusted)
+            guard lastAudioPTS.map({ shifted > $0 }) ?? true else { return }
+            if audioInput?.append(adjusted) == true {
+                lastAudioPTS = shifted
+            } else {
+                NSLog("GlideFrame audio encoder: %@", String(describing: writer.error))
+            }
         default:
             break
         }
     }
 
-    func pause() {
-        lock.withLock { paused = true }
+    public func pause() {
+        lock.withLock { timeline.pause() }
     }
 
-    func resume() {
+    public func resume() {
         lock.withLock {
-            paused = false
-            resumePending = true
+            timeline.resume()
         }
     }
 
-    func finish() async throws -> TimeInterval {
+    public func finish() async throws -> TimeInterval {
         let hasSession: Bool = lock.withLock {
             isFinishing = true
             return sessionStart != nil

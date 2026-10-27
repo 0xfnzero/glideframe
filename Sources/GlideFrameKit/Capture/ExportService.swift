@@ -1,9 +1,11 @@
 @preconcurrency import AVFoundation
 import CoreGraphics
 import Foundation
+import QuartzCore
 import GlideFrameKit
 
-actor ExportService {
+public actor ExportService {
+    public init() {}
     enum ExportError: LocalizedError {
         case screenSourceMissing
         case videoTrackMissing
@@ -22,7 +24,7 @@ actor ExportService {
         }
     }
 
-    func export(manifest: ProjectManifest, packageURL: URL, destination: URL) async throws {
+    public func export(manifest: ProjectManifest, packageURL: URL, destination: URL) async throws {
         guard let source = manifest.sources.first(where: { $0.kind == .screen }) else { throw ExportError.screenSourceMissing }
         let asset = AVURLAsset(url: packageURL.appending(path: source.relativePath))
         let videoTracks = try await asset.loadTracks(withMediaType: .video)
@@ -98,7 +100,7 @@ actor ExportService {
         var parameters: [AVAudioMixInputParameters] = []
         if let systemAudio {
             let input = AVMutableAudioMixInputParameters(track: systemAudio)
-            input.setVolume(Float(volume(for: .screen, in: manifest)), at: .zero)
+            input.setVolume(Float(volume(for: .systemAudio, in: manifest)), at: .zero)
             parameters.append(input)
         }
         if let microphone {
@@ -113,7 +115,9 @@ actor ExportService {
     }
 
     private func volume(for kind: MediaSource.Kind, in manifest: ProjectManifest) -> Double {
-        manifest.tracks.first(where: { $0.kind == kind && $0.isEnabled })?.volume ?? (kind == .screen ? 1 : 0)
+        let track = manifest.tracks.first(where: { $0.kind == kind })
+            ?? (kind == .systemAudio ? manifest.tracks.first(where: { $0.kind == .screen }) : nil)
+        return track.map { $0.isEnabled ? $0.volume : 0 } ?? 0
     }
 
     private func makeVideoComposition(
@@ -123,8 +127,13 @@ actor ExportService {
         duration: CMTime
     ) -> AVMutableVideoComposition {
         let preset = manifest.exportPreset
-        let renderSize = CGSize(width: preset.width, height: preset.height)
-        let padding = CGFloat(manifest.canvas.padding)
+        let dimensions: (Int, Int) = switch manifest.canvas.aspectRatio {
+        case .landscape: (max(preset.width, preset.height), min(preset.width, preset.height))
+        case .portrait: (min(preset.width, preset.height), max(preset.width, preset.height))
+        case .square: (min(preset.width, preset.height), min(preset.width, preset.height))
+        }
+        let renderSize = CGSize(width: dimensions.0, height: dimensions.1)
+        let padding = min(CGFloat(manifest.canvas.padding), min(renderSize.width, renderSize.height) / 3)
         let available = CGSize(width: renderSize.width - padding * 2, height: renderSize.height - padding * 2)
         let fit = min(available.width / sourceSize.width, available.height / sourceSize.height)
         let fitted = CGSize(width: sourceSize.width * fit, height: sourceSize.height * fit)
@@ -136,20 +145,59 @@ actor ExportService {
         instruction.backgroundColor = manifest.canvas.background.cgColor
         let layer = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
         layer.setTransform(base, at: .zero)
-        for frame in manifest.editGraph.zoomKeyframes where frame.time <= duration.seconds {
+        let clips = manifest.editGraph.clips.isEmpty
+            ? [ClipEdit(sourceRange: .init(start: 0, duration: manifest.duration))]
+            : manifest.editGraph.clips.filter { !$0.isRemoved }
+        var cursor: Double = 0
+        var outputFrames: [(time: Double, frame: ZoomKeyframe)] = []
+        for clip in clips {
+            if let previous = manifest.editGraph.zoomKeyframes.last(where: { $0.time <= clip.sourceRange.start }) {
+                outputFrames.append((cursor, previous))
+            } else {
+                outputFrames.append((cursor, ZoomKeyframe(time: 0, scale: 1, focusX: 0.5, focusY: 0.5)))
+            }
+            for frame in manifest.editGraph.zoomKeyframes where frame.time > clip.sourceRange.start && frame.time < clip.sourceRange.end {
+                outputFrames.append((cursor + frame.time - clip.sourceRange.start, frame))
+            }
+            cursor += clip.sourceRange.duration
+        }
+        for output in outputFrames {
+            let frame = output.frame
             let scale = CGFloat(frame.scale)
-            let focus = CGPoint(x: renderSize.width * frame.focusX, y: renderSize.height * frame.focusY)
+            let focus = CGPoint(x: fitted.width * frame.focusX, y: fitted.height * frame.focusY)
             let transform = base
                 .translatedBy(x: focus.x / fit, y: focus.y / fit)
                 .scaledBy(x: scale, y: scale)
                 .translatedBy(x: -focus.x / fit, y: -focus.y / fit)
-            layer.setTransform(transform, at: CMTime(seconds: frame.time, preferredTimescale: 600))
+            layer.setTransform(transform, at: CMTime(seconds: output.time, preferredTimescale: 600))
         }
         instruction.layerInstructions = [layer]
         let composition = AVMutableVideoComposition()
         composition.instructions = [instruction]
         composition.renderSize = renderSize
         composition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(preset.frameRate))
+        if manifest.canvas.cornerRadius > 0 || manifest.canvas.shadow > 0 {
+            let parent = CALayer()
+            parent.frame = CGRect(origin: .zero, size: renderSize)
+            parent.backgroundColor = manifest.canvas.background.cgColor
+            let video = CALayer()
+            video.frame = parent.bounds
+            let rect = CGRect(origin: origin, size: fitted)
+            let path = CGPath(roundedRect: rect, cornerWidth: manifest.canvas.cornerRadius, cornerHeight: manifest.canvas.cornerRadius, transform: nil)
+            let mask = CAShapeLayer()
+            mask.path = path
+            video.mask = mask
+            let shadow = CALayer()
+            shadow.frame = parent.bounds
+            shadow.shadowPath = path
+            shadow.shadowColor = CGColor(gray: 0, alpha: 1)
+            shadow.shadowOpacity = Float(manifest.canvas.shadow)
+            shadow.shadowRadius = 20
+            shadow.shadowOffset = CGSize(width: 0, height: -8)
+            parent.addSublayer(shadow)
+            parent.addSublayer(video)
+            composition.animationTool = AVVideoCompositionCoreAnimationTool(postProcessingAsVideoLayer: video, in: parent)
+        }
         return composition
     }
 }

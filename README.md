@@ -32,6 +32,16 @@ This repository focuses on the local recorder, editor, project format, shared co
 
 The project is early. This repository includes a native macOS app, shared contracts, prototype API code, a web workspace, and local development infrastructure.
 
+## One repository, two desktop applications
+
+- **GlideFrame** is the native SwiftUI macOS app. Run `make mac`; package it with `make mac-dmg`.
+- **GlideFrame Desktop** is the Tauri/React app for macOS and Windows. Run `npm run dev:desktop`; package the current OS with `npm run tauri:build -w @glideframe/desktop`.
+- Both macOS UIs share `GlideFrameCapture` for encoding, audio, pause/resume and export, and `GlideFrameKit` for project files. Tauri bundles an in-process Swift capture library; recording does not require the source checkout or a Swift installation.
+- Both apps use the same project library and read earlier date-grouped recordings.
+- Windows uses FFmpeg GDI screen capture and WASAPI audio, with FFmpeg/ffprobe included in its installer. Windows camera capture is currently disabled.
+
+See [desktop development and validation](docs/DESKTOP.md) for build commands, permissions and tests. Previous local checkouts and app bundles are retained in `.local-backups/`, excluded from Git and distributions.
+
 ## What This Project Is For
 
 | Area | Coverage |

@@ -35,6 +35,10 @@
 "stop" = "Stop";
 "live_preview" = "Live Preview";
 "open_recordings_folder" = "Open Recordings Folder";
+"open_all_recordings" = "All Recordings Folder";
+"open_video_folder" = "Show Video in Folder";
+"recorded_video" = "Recorded Video";
+"export_saved_at" = "Video exported to:\n%@";
 "export" = "Export";
 "convert" = "Convert";
 "format_converter" = "Format Converter";
@@ -59,7 +63,6 @@
 "cancelled" = "Cancelled";
 "remove" = "Remove";
 "reveal_output" = "Reveal Output";
-"ffmpeg_ready" = "FFmpeg %@ ready";
 "ffmpeg_missing" = "FFmpeg unavailable";
 "cancel" = "Cancel";
 "close" = "Close";
@@ -77,10 +80,10 @@
 "padding" = "Padding";
 "corners" = "Corners";
 "auto_polish" = "Auto Polish";
-"auto_polish_applied" = "Automatic zooms were regenerated from your clicks.";
-"zoom_events" = "Zoom keyframes";
+"auto_polish_applied" = "Auto Polish applied.";
 "remove_silence" = "Remove Silence";
 "export_complete" = "The video was exported successfully.";
 "reveal_project" = "Reveal Project";
 "recording_saved" = "Recording saved to:\n%@";
-"recovered_projects" = "%d project(s) need recovery review";
+
+"screen" = "Screen";

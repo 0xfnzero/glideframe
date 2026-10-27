@@ -30,7 +30,17 @@
 
 本仓库聚焦本地录屏器、编辑器、项目格式、共享协议和开发文档。
 
-项目仍处于早期阶段。当前仓库包含原生 macOS 应用、共享协议、API 原型、Web 工作区和本地开发基础设施。
+项目仍处于早期阶段。当前仓库包含原生 macOS 应用、Tauri 多平台应用、共享协议、API 原型、Web 工作区和本地开发基础设施。
+
+## 一个仓库，两种桌面应用
+
+- **GlideFrame**：SwiftUI 原生 macOS 应用。`make mac` 启动；`make mac-dmg` 生成安装包。
+- **GlideFrame Desktop**：Tauri + React 应用，支持 macOS 和 Windows。`npm run dev:desktop` 开发；`npm run tauri:build -w @glideframe/desktop` 为当前系统打包。
+- macOS 两种界面共用 `GlideFrameCapture` 编码、音轨、暂停与导出实现，以及 `GlideFrameKit` 项目格式。Tauri 将 Swift 录制桥打包为应用内动态库，录屏无需源码目录、Swift 工具链或外部 helper 应用。
+- 两种应用读取同一个 `~/Movies/GlideFrame/Projects` 项目库，并兼容旧的按日期分类的项目。
+- Windows 使用 FFmpeg GDI 录屏与 WASAPI 音频采集；安装包内置 FFmpeg、ffprobe。当前 Windows 摄像头入口禁用。
+
+完整构建、权限修复、测试步骤见 [桌面开发与验证](docs/DESKTOP.md)。旧工程和安装包保存在本机 `.local-backups/`，不纳入 Git 或发布包。
 
 ## 项目适合做什么
 

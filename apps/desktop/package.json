@@ -1,0 +1,30 @@
+{
+  "name": "@glideframe/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev-desktop.mjs",
+    "vite:dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "build:helper:mac": "bash scripts/build-macos-helper.sh",
+    "tauri:build": "node scripts/build-desktop.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/plugin-dialog": "^2.8.3",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.9.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.2.1"
+  }
+}

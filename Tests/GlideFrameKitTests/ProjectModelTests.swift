@@ -3,6 +3,31 @@ import XCTest
 @testable import GlideFrameKit
 
 final class ProjectModelTests: XCTestCase {
+    func testReadsTauriFieldNamesAndNestedProjects() async throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let repository = ProjectRepository(rootURL: root)
+        let created = try await repository.createProject(title: "Tauri compatibility")
+        var manifest = created.manifest
+        let source = MediaSource(kind: .screen, relativePath: "media/screen.mp4", duration: 3)
+        manifest.sources = [source]
+        manifest.tracks = [.init(sourceID: source.id, kind: .screen)]
+        try await repository.save(manifest, at: created.packageURL)
+        let url = created.packageURL.appending(path: "manifest.json")
+        var json = try String(contentsOf: url, encoding: .utf8)
+        json = json.replacingOccurrences(of: "sourceID", with: "sourceId")
+        // Earlier Rust builds emitted fractional RFC 3339 dates.
+        json = json.replacingOccurrences(of: "Z\"", with: ".123Z\"")
+        try json.write(to: url, atomically: true, encoding: .utf8)
+        let nested = root.appending(path: "2026-10-27")
+        try FileManager.default.createDirectory(at: nested, withIntermediateDirectories: true)
+        let moved = nested.appending(path: created.packageURL.lastPathComponent)
+        try FileManager.default.moveItem(at: created.packageURL, to: moved)
+        let loaded = try await repository.load(at: moved)
+        XCTAssertEqual(loaded.tracks.first?.sourceID, source.id)
+        let summaries = try await repository.listProjects()
+        XCTAssertEqual(summaries.map(\.id), [manifest.id])
+    }
     func testProjectRoundTripAndRecovery() async throws {
         let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
@@ -25,6 +50,23 @@ final class ProjectModelTests: XCTestCase {
         try await repository.writeRecoveryJournal(journal, at: created.packageURL)
         let recovered = try await repository.recoverInterruptedProjects()
         XCTAssertEqual(recovered.map(\.id), [manifest.id])
+    }
+
+    func testRecoverySkipsLiveOwnerAndRecoversExitedOwner() async throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let repository = ProjectRepository(rootURL: root)
+        let created = try await repository.createProject(title: "Active in another client")
+        var journal = RecoveryJournal(projectID: created.manifest.id, state: .recording,
+            startedAt: Date(), sourcePaths: ["media/screen.mp4"],
+            ownerProcessID: ProcessInfo.processInfo.processIdentifier)
+        try await repository.writeRecoveryJournal(journal, at: created.packageURL)
+        let live = try await repository.recoverInterruptedProjects()
+        XCTAssertTrue(live.isEmpty)
+        journal.ownerProcessID = Int32.max
+        try await repository.writeRecoveryJournal(journal, at: created.packageURL)
+        let exited = try await repository.recoverInterruptedProjects()
+        XCTAssertEqual(exited.map(\.id), [created.manifest.id])
     }
 
     func testAutoPolishDebouncesClicksAndClampsFocus() {

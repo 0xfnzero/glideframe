@@ -19,6 +19,9 @@ The full license text is available at [LICENSES/AGPL-3.0-or-later.txt](LICENSES/
 | `apps/api/` | `AGPL-3.0-or-later` | Public API prototype and worker code kept in this repository |
 | `apps/web/` | `AGPL-3.0-or-later` | Public web workspace prototype kept in this repository |
 | `docker-compose.yml` | `AGPL-3.0-or-later` | Local development service deployment |
+| `apps/desktop/` | `MIT` | Imported Tauri desktop client; see directory license |
+| `crates/glideframe-recorder/` | `MIT` | Imported Rust recording backend; see directory license |
+| `Sources/GlideFrameCaptureBridge/`, `Sources/GlideFrameTauriHelper/` | `MIT` | Imported Swift capture bridge and development CLI; see directory licenses |
 | `Sources/` | `MPL-2.0` | macOS desktop app and Swift shared logic |
 | `Tests/` | `MPL-2.0` | Swift tests for the desktop/shared Swift code |
 | `macos/` | `MPL-2.0` | macOS plist, entitlements, and app configuration |

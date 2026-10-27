@@ -51,10 +51,8 @@ struct FormatConverterView: View {
         switch converter.toolchainState {
         case .checking:
             ProgressView().controlSize(.small)
-        case .available(let version):
-            Label(String(format: tr("ffmpeg_ready"), version), systemImage: "checkmark.circle.fill")
-                .font(.caption)
-                .foregroundStyle(.green)
+        case .available:
+            EmptyView()
         case .unavailable:
             Label(tr("ffmpeg_missing"), systemImage: "exclamationmark.triangle.fill")
                 .font(.caption)

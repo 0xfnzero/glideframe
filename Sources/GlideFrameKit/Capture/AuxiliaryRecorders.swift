@@ -4,32 +4,45 @@ import Foundation
 import GlideFrameKit
 
 @MainActor
-final class PointerTracker {
+public final class PointerTracker {
+    public init() {}
+
     private var monitor: Any?
     private var startedAt: Date?
     private var bounds = CGRect.zero
-    private(set) var events: [PointerEvent] = []
+    public private(set) var events: [PointerEvent] = []
     private var lastMoveAt: TimeInterval = -1
+    private var pausedAt: Date?
+    private var pausedDuration: TimeInterval = 0
 
-    func start(bounds: CGRect) {
+    public func start(bounds: CGRect) {
         stop()
         self.bounds = bounds
         startedAt = Date()
         events = []
+        lastMoveAt = -1
+        pausedAt = nil
+        pausedDuration = 0
         monitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDown, .rightMouseDown]) { [weak self] event in
             Task { @MainActor in self?.capture(event) }
         }
     }
 
-    func stop() {
+    public func stop() {
         if let monitor { NSEvent.removeMonitor(monitor) }
         monitor = nil
         startedAt = nil
     }
 
+    public func pause() { if pausedAt == nil { pausedAt = Date() } }
+    public func resume() {
+        if let pausedAt { pausedDuration += Date().timeIntervalSince(pausedAt) }
+        pausedAt = nil
+    }
+
     private func capture(_ event: NSEvent) {
-        guard let startedAt, bounds.width > 0, bounds.height > 0 else { return }
-        let elapsed = Date().timeIntervalSince(startedAt)
+        guard let startedAt, pausedAt == nil, bounds.width > 0, bounds.height > 0 else { return }
+        let elapsed = Date().timeIntervalSince(startedAt) - pausedDuration
         let kind: PointerEvent.Kind = event.type == .mouseMoved ? .move : .click
         if kind == .move, elapsed - lastMoveAt < 0.05 { return }
         if kind == .move { lastMoveAt = elapsed }
@@ -42,12 +55,14 @@ final class PointerTracker {
 }
 
 @MainActor
-final class MicrophoneRecorder {
+public final class MicrophoneRecorder {
+    public init() {}
+
     private var recorder: AVAudioRecorder?
 
-    func start(url: URL) throws {
+    public func start(url: URL) throws {
         let settings: [String: Any] = [
-            AVFormatIDKey: kAudioFormatMPEG4AAC,
+            AVFormatIDKey: url.pathExtension.lowercased() == "wav" ? kAudioFormatLinearPCM : kAudioFormatMPEG4AAC,
             AVSampleRateKey: 48_000,
             AVNumberOfChannelsKey: 1,
             AVEncoderBitRateKey: 128_000
@@ -60,18 +75,18 @@ final class MicrophoneRecorder {
         self.recorder = recorder
     }
 
-    func pause() { recorder?.pause() }
-    func resume() { recorder?.record() }
-    func stop() { recorder?.stop(); recorder = nil }
+    public func pause() { recorder?.pause() }
+    public func resume() { recorder?.record() }
+    public func stop() { recorder?.stop(); recorder = nil }
 }
 
 @MainActor
-final class CameraRecorder: NSObject, AVCaptureFileOutputRecordingDelegate {
+public final class CameraRecorder: NSObject, AVCaptureFileOutputRecordingDelegate {
     private let session = AVCaptureSession()
     private let output = AVCaptureMovieFileOutput()
     private var continuation: CheckedContinuation<Void, Error>?
 
-    func start(url: URL) throws {
+    public func start(url: URL) throws {
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .unspecified) else {
             throw NSError(domain: "GlideFrame.Camera", code: 1, userInfo: [NSLocalizedDescriptionKey: "No camera is available."])
         }
@@ -88,7 +103,7 @@ final class CameraRecorder: NSObject, AVCaptureFileOutputRecordingDelegate {
         output.startRecording(to: url, recordingDelegate: self)
     }
 
-    func stop() async throws {
+    public func stop() async throws {
         guard output.isRecording else { session.stopRunning(); return }
         try await withCheckedThrowingContinuation { continuation in
             self.continuation = continuation
@@ -97,7 +112,10 @@ final class CameraRecorder: NSObject, AVCaptureFileOutputRecordingDelegate {
         session.stopRunning()
     }
 
-    nonisolated func fileOutput(
+    public func pause() { if output.isRecording { output.pauseRecording() } }
+    public func resume() { if output.isRecordingPaused { output.resumeRecording() } }
+
+    nonisolated public func fileOutput(
         _ output: AVCaptureFileOutput,
         didFinishRecordingTo outputFileURL: URL,
         from connections: [AVCaptureConnection],

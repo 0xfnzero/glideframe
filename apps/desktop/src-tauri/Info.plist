@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSCameraUsageDescription</key>
+	<string>GlideFrame records your camera as an optional, separate video track.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>GlideFrame records your microphone as an optional, separate audio track.</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>GlideFrame records the screen, window, or region you select.</string>
+</dict>
+</plist>

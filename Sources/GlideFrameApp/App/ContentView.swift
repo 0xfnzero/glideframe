@@ -19,7 +19,14 @@ struct ContentView: View {
                     EmptyStudioView()
                 }
             }
-            .safeAreaInset(edge: .top, spacing: 0) { StudioToolbar() }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                VStack(spacing: 0) {
+                    StudioToolbar()
+                    if !model.recordingEngine.state.isActive, model.selectedPackageURL != nil {
+                        RecordingFileLocation()
+                    }
+                }
+            }
         }
         .sheet(isPresented: $model.showsRecordingSetup) { RecordingSetupView() }
         .sheet(isPresented: $model.showsFormatConverter) {
@@ -30,7 +37,7 @@ struct ContentView: View {
                 return Alert(
                     title: Text(tr(notice.kind == .success ? "done" : "error")),
                     message: Text(notice.message),
-                    primaryButton: .default(Text(tr("reveal_project"))) {
+                    primaryButton: .default(Text(tr("open_video_folder"))) {
                         NSWorkspace.shared.activateFileViewerSelecting([revealURL])
                     },
                     secondaryButton: .cancel(Text(tr("ok")))
@@ -105,12 +112,23 @@ private struct ProjectSidebar: View {
             }
             .listStyle(.sidebar)
 
-            if model.recoveredProjectCount > 0 {
-                Label(String(format: tr("recovered_projects"), model.recoveredProjectCount), systemImage: "lifepreserver")
-                    .font(.caption)
+            VStack(alignment: .leading, spacing: 8) {
+                Button { model.revealProjectsFolder() } label: {
+                    Label(tr("open_all_recordings"), systemImage: "folder")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                Text(ProjectRepository.defaultRootURL().path)
+                    .font(.system(size: 10))
                     .foregroundStyle(.secondary)
-                    .padding(12)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .textSelection(.enabled)
+                    .help(ProjectRepository.defaultRootURL().path)
             }
+            .padding(12)
+            .overlay(alignment: .top) { Divider() }
+
         }
     }
 }
@@ -145,12 +163,6 @@ private struct StudioToolbar: View {
             Spacer()
             RecordingControlBar(engine: model.recordingEngine)
             Spacer()
-            Button { model.revealProjectsFolder() } label: {
-                Image(systemName: "folder")
-            }
-            .buttonStyle(.bordered)
-            .help(tr("open_recordings_folder"))
-
             Button {
                 model.showsRecordingSetup = true
             } label: {
@@ -199,6 +211,37 @@ private struct StudioToolbar: View {
     }
 }
 
+private struct RecordingFileLocation: View {
+    @EnvironmentObject private var model: AppModel
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "folder")
+                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(tr("recorded_video")).font(.system(size: 12, weight: .medium))
+                if let url = model.sourceURL() ?? model.selectedPackageURL {
+                    Text(url.path)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .textSelection(.enabled)
+                        .help(url.path)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button { model.revealRecording() } label: {
+                Label(tr("open_video_folder"), systemImage: "folder")
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .overlay(alignment: .bottom) { Divider() }
+    }
+}
+
 private struct RecordingControlBar: View {
     @EnvironmentObject private var model: AppModel
     @ObservedObject private var engine: RecordingEngine
@@ -231,8 +274,7 @@ private struct RecordingControlBar: View {
     }
 
     private var elapsed: String {
-        guard case .recording(let startedAt) = engine.state else { return "00:00" }
-        return Date().timeIntervalSince(startedAt).durationLabel
+        engine.elapsed.durationLabel
     }
 }
 

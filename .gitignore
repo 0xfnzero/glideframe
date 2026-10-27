@@ -13,3 +13,9 @@ coverage/
 .data/
 *.xcuserstate
 *.tsbuildinfo
+.local-backups/
+apps/*/dist/
+apps/*/src-tauri/target/
+apps/*/src-tauri/gen/
+apps/*/src-tauri/binaries/
+target/
