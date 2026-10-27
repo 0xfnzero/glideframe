@@ -6,6 +6,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.2.0"
+    CURRENT_PROJECT_VERSION: 2
     ARCHS: arm64
 targets:
   GlideFrameKit:
@@ -43,7 +45,8 @@ targets:
       path: macos/Info.plist
       properties:
         CFBundleDisplayName: GlideFrame
-        CFBundleShortVersionString: 0.1.0
+        CFBundleShortVersionString: 0.2.0
+        CFBundleVersion: "2"
         LSApplicationCategoryType: public.app-category.video
         NSHighResolutionCapable: true
         NSCameraUsageDescription: GlideFrame records your camera as an optional, separate video track.
